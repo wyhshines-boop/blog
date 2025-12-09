@@ -8,6 +8,7 @@ import icon from 'astro-icon';
 import vercel from '@astrojs/vercel';
 import { defineConfig } from 'astro/config';
 
+
 // must use relative imports, and their entire import subtrees
 import { rehypeExternalLinks } from './plugins/rehype-external-links';
 import { remarkReadingTime } from './plugins/remark-reading-time.mjs';
