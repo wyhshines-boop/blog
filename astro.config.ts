@@ -5,7 +5,7 @@ import partytown from '@astrojs/partytown';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import icon from 'astro-icon';
-import vercel from '@astrojs/vercel';
+import vercel from '@astrojs/vercel'; // Vercel adapter
 import { defineConfig } from 'astro/config';
 
 
