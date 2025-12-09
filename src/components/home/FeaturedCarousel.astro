@@ -73,10 +73,7 @@ const maxPosts = posts.slice(0, 3); // 最多3篇
                       {post.data.description}
                     </p>
                     
-                    {/* 立即阅读文本 */}
-                    <a href={`${ROUTES.BLOG}${post.slug}`} class="block mt-2 text-sm md:text-base text-captions dark:text-white/70 font-light underline">
-                      立即阅读
-                    </a>
+
                   </div>
 
                   {/* 下部：指示器 */}
@@ -92,7 +89,7 @@ const maxPosts = posts.slice(0, 3); // 最多3篇
                           >
                             <div
                               class={cn(
-                                "w-4 md:w-8 h-1 transition-all duration-300",
+                                "w-24 md:w-16 h-1.5 transition-all duration-400 group-hover:scale-y-[3]",
                                 i === index 
                                   ? "bg-primary dark:bg-white" 
                                   : "bg-base-300 dark:bg-white/30 group-hover:bg-base-content/20 dark:group-hover:bg-white/50"

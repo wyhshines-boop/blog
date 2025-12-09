@@ -62,13 +62,13 @@ const threePageNumbers = (currentPage: number, lastPage: number): number[] => {
   hasMoreThanOnePage() || showIfOnePage ? (
     <div class={cn('flex items-center justify-end xs:justify-between gap-4', className)}>
       <p class="b-p hidden xs:inline-block text-base">
-        Showing
+        显示第
         <span class="font-bold">{start + 1}</span>
-        to
+        到第
         <span class="font-bold">{end + 1}</span>
-        of
+        条，共
         <span class="font-bold">{total}</span>
-        results
+        条结果
       </p>
 
       <nav aria-label="pages" class="flex items-center justify-end gap-4 text-xl">
