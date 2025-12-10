@@ -6,9 +6,8 @@ import { ROUTES } from '@/constants/routes';
 import { formatDate, formatDateIso } from '@/utils/datetime';
 import { cn } from '@/utils/styles';
 import { getCategoryProps } from '@/modules/post/category';
+import { CATEGORIES } from '@/constants/collections'; // Import CATEGORIES
 import type { HTMLAttributes } from 'astro/types';
-
-
 
 export interface Props extends HTMLAttributes<'p'> {
   publishDate: Date;
@@ -20,6 +19,10 @@ export interface Props extends HTMLAttributes<'p'> {
 const { category, publishDate, updatedDate, readingTime, class: className } = Astro.props;
 
 const shouldDisplay = [category, publishDate, updatedDate, readingTime].some(Boolean);
+
+// Find localized category label if category exists
+const categoryData = category ? CATEGORIES.find((c) => c.name.toLowerCase() === category.toLowerCase()) : undefined;
+const categoryLabel = categoryData?.label || category;
 ---
 
 {
@@ -28,24 +31,24 @@ const shouldDisplay = [category, publishDate, updatedDate, readingTime].some(Boo
         {publishDate && (      
           <Icon name="mdi:access-time" />
           <time itemprop="datePublished" datetime={formatDateIso(publishDate)}>
-            {formatDate(publishDate)}
+            {formatDateIso(publishDate)}
           </time>        
         )}
         {category && (  
           <span>·</span>     
           <Icon name={getCategoryProps(category).icon} />
-          <Link href={`${ROUTES.CATEGORIES}${category}`}>{category}</Link>       
+          <Link href={`${ROUTES.CATEGORIES}${category.toLowerCase()}`}>{categoryLabel}</Link>       
         )}
         {readingTime && (    
           <span>·</span>     
           <Icon name="mdi:book-open-blank-variant-outline" />
-          <span>{`${Math.round(readingTime)} minutes`}</span>     
+          <span>{`${Math.round(readingTime)} 分钟`}</span>     
         )}
         {updatedDate && (    
           <span>·</span>     
           <Icon name="mdi:edit-outline" />
           <time itemprop="dateUpdated" datetime={formatDateIso(updatedDate)}>
-            {formatDate(updatedDate)}
+            {formatDateIso(updatedDate)}
           </time>         
         )}
     </p>

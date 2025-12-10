@@ -11,27 +11,27 @@ interface NavItem {
 export const NAVIGATION_ITEMS: NavItem[] = [
   {
     title: 'Shopify独立站',
-    path: ROUTES.BLOG,
+    path: `${ROUTES.CATEGORIES}shopify`,
     icon: 'mdi:shopify', // Added for demonstration
   },
   {
     title: '收款',
-    path: ROUTES.EXPLORE,
+    path: `${ROUTES.CATEGORIES}payment`,
     icon: 'mdi:credit-card-check-outline',
   },
   {
     title: '建站',
-    path: ROUTES.PROJECTS,
+    path: `${ROUTES.CATEGORIES}website`,
     icon: 'mdi:web',
   },
   {
     title: '所有教程',
-    path: ROUTES.ABOUT,
+    path: ROUTES.EXPLORE,
     icon: 'mdi:book-open-blank-variant-outline',
   },
   {
     title: '关于',
-    path: ROUTES.GALLERY,
+    path: ROUTES.ABOUT,
     icon: 'mdi:clipboard-account-outline',
   },
 ] as const;

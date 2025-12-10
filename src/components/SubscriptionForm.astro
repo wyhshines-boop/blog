@@ -1,0 +1,31 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+
+<div class="bg-sky-500 rounded-2xl p-8 col-span-2 md:col-span-6 relative overflow-hidden">
+  <div class="flex items-center gap-3 mb-6 relative z-10">
+    <Icon name="mdi:newspaper-variant-outline" class="w-8 h-8" />
+    <h3 class="text-2xl font-bold">订阅电子报</h3>
+  </div>
+  
+  <div class="relative z-10 flex flex-col sm:flex-row gap-2">
+    <a
+      href="https://facechuhai.kit.com/548568f0af"
+      data-formkit-toggle="548568f0af"
+      class="flex items-center justify-center flex-1 px-6 py-3 rounded-full bg-white text-sky-500 font-bold hover:bg-white/90 transition-colors shadow-sm"
+    >
+      <Icon name="email" class="w-6 h-6 mr-2" />
+      <span>邮件订阅</span>
+    </a>
+
+    <a
+      href="#"
+      class="flex items-center justify-center flex-1 px-6 py-3 rounded-full bg-[#fff] text-[#2AAE67] font-bold hover:bg-white/90 transition-colors shadow-sm"
+    >
+      <Icon name="wechat" class="w-6 h-6 mr-2" />
+      <span>微信公众号</span>
+    </a>
+  </div>
+
+  <script async data-uid="548568f0af" src="https://facechuhai.kit.com/548568f0af/index.js"></script>
+</div>

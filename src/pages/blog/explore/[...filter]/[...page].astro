@@ -44,9 +44,10 @@ export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
 
   // prerender categories
   const uniqueCategories = getUniqueCategories(posts);
+  const normalizedCategories = [...new Set(uniqueCategories.map((c) => c.toLowerCase()))];
 
-  const categoryPagination = uniqueCategories.flatMap((category) => {
-    const filteredPosts = posts.filter((post) => post.data.category === category);
+  const categoryPagination = normalizedCategories.flatMap((category) => {
+    const filteredPosts = posts.filter((post) => post.data.category.toLowerCase() === category);
     const options = { pageSize, params: { filter: `categories/${category}` } };
     const pagination = paginate(filteredPosts, options);
     return pagination;

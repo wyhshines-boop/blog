@@ -8,7 +8,7 @@ import { ROUTES } from '@/constants/routes';
 import { CONFIG_CLIENT } from '@/config/client';
 import { getPageMetadata } from '@/utils/metadata';
 import { pickPaginationPropsFromPage } from '@/utils/pagination';
-import { capitalizeFirstLetter } from '@/utils/strings';
+import { CATEGORIES } from '@/constants/collections';
 
 import type { Metadata } from '@/types/common';
 import type { Post } from '@/types/post';
@@ -19,9 +19,10 @@ export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
   const pageSize = CONFIG_CLIENT.PAGE_SIZE_POST_CARD;
 
   const uniqueCategories = getUniqueCategories(posts);
+  const normalizedCategories = [...new Set(uniqueCategories.map((c) => c.toLowerCase()))];
 
-  const pagination = uniqueCategories.flatMap((category) => {
-    const filteredPosts = posts.filter((post) => post.data.category === category);
+  const pagination = normalizedCategories.flatMap((category) => {
+    const filteredPosts = posts.filter((post) => post.data.category.toLowerCase() === category);
     const categoryPagination = paginate(filteredPosts, { pageSize, params: { category } });
     return categoryPagination;
   });
@@ -35,8 +36,13 @@ const { category } = Astro.params;
 
 const defaultMetadata = getPageMetadata('lists/blog/categories/category');
 
-const title = capitalizeFirstLetter(category);
-const metadata: Metadata = { ...defaultMetadata, title };
+// Find category data from constants (case-insensitive)
+const categoryData = CATEGORIES.find((c) => c.name.toLowerCase() === category.toLowerCase());
+const categoryName = categoryData?.label || category;
+const categoryDescription = categoryData?.description || '';
+
+const title = categoryName;
+const metadata: Metadata = { ...defaultMetadata, title, description: categoryDescription || defaultMetadata.description };
 
 const paginationProps = pickPaginationPropsFromPage(page);
 const layoutProps = { metadata, paginationProps };
@@ -44,9 +50,12 @@ const layoutProps = { metadata, paginationProps };
 
 <List {...layoutProps}>
   <Fragment slot="heading">
-    <div class="flex justify-between">
-      <h1 class="b-h1">{title}</h1>
-      <Link href={ROUTES.EXPLORE} class="mt-2 md:mt-4">all categories</Link>
+    <div class="flex justify-between items-start mb-12">
+      <div>
+        <h1 class="b-h1 mb-4">{title}</h1>
+        {categoryDescription && <p class="text-lg text-content/80 max-w-2xl">{categoryDescription}</p>}
+      </div>
+      <Link href={ROUTES.EXPLORE} class="mt-2 md:mt-4 shrink-0">所有分类</Link>
     </div>
   </Fragment>
   <PostList posts={page.data} />

@@ -33,8 +33,12 @@ export const getCategoryLinks = (posts: PostCollection[], pathname?: string): Fi
   const itemLinks = filterItems.map((item) => {
     const { text, count } = item;
 
-    const originalHref = `${ROUTES.EXPLORE_CATEGORIES}${text}`;
-    const textWithCount = `${text} ${count}`;
+    const handle = text.toLowerCase();
+    const categoryConfig = CATEGORIES.find((c) => c.name.toLowerCase() === handle);
+    const label = categoryConfig?.label || text;
+
+    const originalHref = `${ROUTES.EXPLORE_CATEGORIES}${handle}`;
+    const textWithCount = `${label} ${count}`;
 
     const isActive = originalHref === pathname;
     const href = !isActive ? originalHref : ROUTES.EXPLORE;
@@ -51,4 +55,4 @@ const defaultCategory = CATEGORIES[0];
 
 /** set default to prevent breaking build */
 export const getCategoryProps = (categoryName: string): CategoryType =>
-  CATEGORIES.find((item) => item.name === categoryName) ?? defaultCategory;
+  CATEGORIES.find((item) => item.name.toLowerCase() === categoryName.toLowerCase()) ?? defaultCategory;

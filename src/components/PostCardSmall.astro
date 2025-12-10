@@ -79,7 +79,7 @@ const getTransitionNameFromElementId = setTransitionSlug({ pageSlug: slug });
     >
       <Icon name={isUpdatedDate ? 'mdi:edit-outline' : 'mdi:access-time'} class="w-4 h-4" />
       <time itemprop="datePublished" datetime={formatDateIso(lastAccessDate)}>
-        {formatDate(lastAccessDate)}
+        {formatDateIso(lastAccessDate)}
       </time>
     </span>
   </div>

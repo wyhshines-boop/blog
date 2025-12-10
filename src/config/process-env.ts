@@ -16,16 +16,15 @@ import type { ProcessEnvType } from '../types/config';
 // ! MUST use process.env for vars used in astro.config.mjs.
 // https://github.com/withastro/astro/issues?q=.env+file+not+loaded
 
-const NODE_ENV = process.env.NODE_ENV;
+// Load default .env file first
+dotenv.config();
 
-if (!nodeEnvValues.includes(NODE_ENV)) {
-  // eslint-disable-next-line no-console
-  console.error('Invalid process.env.NODE_ENV: ', NODE_ENV);
-  throw new Error('Invalid process.env.NODE_ENV');
+const NODE_ENV = process.env.NODE_ENV || 'development';
+
+if (process.env.NODE_ENV) {
+  const specificEnvFileName = `.env.${process.env.NODE_ENV}`;
+  dotenv.config({ path: specificEnvFileName });
 }
-
-const envFileName = `.env.${NODE_ENV}`;
-dotenv.config({ path: envFileName });
 
 /*------------------ validate processEnvData -----------------*/
 
