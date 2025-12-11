@@ -4,7 +4,7 @@
         <title>脸哥-Shopify独立站和出海教程</title>
         <link>http://localhost:3000</link>
         <description>Shopify 独立站运营与出海教程。提供从建站基础、选品策略、流量获取到数据分析的全流程学习路径</description>
-        <lastBuildDate>Thu, 11 Dec 2025 11:54:59 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 11 Dec 2025 12:21:36 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
@@ -66,7 +66,7 @@
 <span class="line"><span style="color:#E1E4E8">  {% endfor %}</span></span>
 <span class="line"><span style="color:#E1E4E8">&#x3C;/</span><span style="color:#85E89D">span</span><span style="color:#E1E4E8">></span></span></code></pre>
 <p><strong>效果预览：</strong></p>
-<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image.png" alt=""></p>
+<p><img src="./_images/image.png" alt=""></p>
 <p>你可以在 <code>assign payment_types=" " </code>中填写想要显示的付款方式，shopify支持以下付款方式图标：</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>afterpay - american_express - apple_pay - bitcoin - dankort - diners_club - discover - dogecoin - dwolla - facebook_pay -forbrugsforeningen - google_pay - ideal - jcb - klarna - klarna-pay-later - litecoin - maestro - master - paypal - shopify_pay - sofort - unionpay - visa</span></span></code></pre>
 <p>通过在产品页面显示你的网站支持的付款方式，有助于提升客户信任。</p>
@@ -75,14 +75,14 @@
 <p>此种方式需要您具有前端和Liquid基础技术。</p>
 <p>shopify主题模板一般支持在两个地方显示付款图标：<strong>产品页面和页尾</strong></p>
 <p>我们可以通过添加Liquid代码来实现这个功能，对于不同主题由于其功能结构的不同修改的文件也不同，通常修改 <em>main-product.iquid</em> 和 <em>footer.liquid</em> 即可实现</p>
-<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image-3.png" alt=""></p>
-<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image-2.png" alt=""></p>
+<p><img src="./_images/image-3.png" alt=""></p>
+<p><img src="./_images/image-2.png" alt=""></p>
 <h2 id="3使用shopify-app-store中的付费插件">3.使用shopify app store中的付费插件</h2>
 <p>在app商店中有许多信任徽章应用，搜索相关关键词例如 “payment icon” 就可以找到，一些插件也提供免费套餐</p>
-<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image-4.png" alt=""></p>
+<p><img src="./_images/image-4.png" alt=""></p>
 <h2 id="一种更好的方法在购物车中显示付款和物流图标">一种更好的方法：在购物车中显示付款和物流图标</h2>
 <p>多数付费shopify主题都支持动态弹出式购物车，我们可以在购物车底部添加，这样用户在加购后就能看到它们。如果需要开发此功能，一般需要修改 <em>cart-drawer.liquid</em> 文件.</p>
-<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image-7.png" alt=""></p>]]></content:encoded>
+<p><img src="./_images/image-7.png" alt=""></p>]]></content:encoded>
             <author>wyhshines@gmail.com (脸哥出海)</author>
         </item>
         <item>
@@ -121,7 +121,7 @@
 <p>中风险：通常情况下不是欺诈订单，不会出现拒付</p>
 <p>低风险：正常订单</p>
 <p>点击小眼睛图标可以看到详细的分析指标。</p>
-<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image-8.png" alt=""></p>
+<p><img src="./_images/image-8.png" alt=""></p>
 <p>欺诈分析系统会对每一笔订单生成风险指标，即使这个订单是使用 paypal 等非信用卡付款方式支付的。</p>
 <p><strong>欺诈分析系统并不是完全免费的</strong>，只有商家满足以下条件之一，才会看到订单欺诈分析指标：</p>
 <ul>
@@ -139,7 +139,7 @@
 <p>如果订单为低风险，则没有遭遇欺诈性拒付的风险</p>
 <h3 id="使用-shopify-flow-自动化取消高风险订单">使用 shopify flow 自动化取消高风险订单</h3>
 <p>每次手动取消高风险订单都很麻烦，你可以打开后台的 flow 应用，点击<strong>浏览模版</strong>，找到“Cancel high-risk orders”，安装并启用，如果商店出现高风险订单，flow 会在高风险订单被创建后立即自动取消该订单，并向你发送一封邮件通知此次交易的信息。</p>
-<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image-9.png" alt=""></p>
+<p><img src="./_images/image-9.png" alt=""></p>
 <h2 id="减少损失调整款项获取方式">减少损失：调整款项获取方式</h2>
 <p>对于高客单价的商店来说，每笔订单可能高达数千美元，当一笔订单发生取消或退款时，银行并不会退还交易时收取的手续费，以常规4%的卡费率举例，当一笔订单1000美元的高风险订单被取消并退款后，你仍然会被收取40美元的手续费。</p>
 <p><strong>为减少损失，商家可以调整款项获取方式</strong>，如果商家在取消订单前没有获取款项，则这笔交易额处于pending状态，并未打入商家收款帐户。当一笔订单被创建后，商家可以选择多种款项获取方式来收取订单交易额到收款账户中：</p>
@@ -154,7 +154,7 @@
 <p>手动获取：在每笔订单中点击“获取款项”时才会获取</p>
 </li>
 </ul>
-<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image-10.png" alt=""></p>
+<p><img src="./_images/image-10.png" alt=""></p>
 <p><strong>建议：<strong>如果你的商店订单取消率高，高风险订单多，建议使用</strong>发货时自动获取</strong>的方式。</p>
 <p>这样在取消订单或高风险订单时就不会被收取手续费，因为此时订单款项正处于pending状态，还未打入你的收款账户中。</p>
 <p><strong>需要注意</strong>：如果你的商店发货周期较长，总是很久才能发货，要及时手动获取款项（使用发货时自动获取方式时也可以提前手动获取），因为在订单被创建后一周左右商家如果没有获得款项，钱款将会原路退回客户手中。</p>
@@ -187,7 +187,7 @@
 <p>3DS验证是由收单方自动设置的，例如shopifyPayments 或空中云汇，Stripe等，3DS验证过的交易更加安全，但如果验证频率过高也会导致客户弃单，转化率下降。一些收单方允许客户指定如何设置3DS验证。</p>
 <p><strong>责任转移</strong> ：如果一笔订单触发并通过了3DS认证，则会在shopify风险分析指标中显示。通过3DS验证的订单责任将被转移到发卡方，简而言之：如果这笔订单以后出现拒付争议，则商家不应为此负责，因为商家是收款方银行的客户，不是发卡银行的客户。此时你的收单服务商将负责为你处理这笔拒付交易，而不是由客户的银行裁判。</p>
 <p><strong>Shop Protect</strong> ：如果你使用 shopifyPayments，则在部分地区如美国支持 Shop Protect，通过Shop Protect 验证的订单即使遭遇欺诈，损失会由 Shopify 赔付。</p>
-<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image-11.png" alt=""></p>]]></content:encoded>
+<p><img src="./_images/image-11.png" alt=""></p>]]></content:encoded>
             <author>wyhshines@gmail.com (脸哥出海)</author>
         </item>
     </channel>
