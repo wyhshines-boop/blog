@@ -1,0 +1,145 @@
+---
+import { Icon } from 'astro-icon/components';
+import Search from 'astro-pagefind/components/Search';
+import { cn } from '@/utils/styles';
+---
+
+<search-overlay
+  class="fixed inset-0 z-50 flex items-start justify-center p-4 transition-opacity duration-300 opacity-0 invisible"
+  aria-modal="true"
+  role="dialog"
+  tabindex="-1"
+  data-is-open="false"
+>
+  <div class="fixed inset-0 bg-black/50" aria-hidden="true" data-backdrop></div>
+
+  <div
+    class="relative bg-base-100 rounded-lg shadow-xl w-full max-w-2xl transform transition-all duration-300 -translate-y-4 scale-95"
+    data-content
+  >
+    <div class="flex justify-end p-2">
+      <button
+        type="button"
+        class="text-captions hover:text-primary transition-colors"
+        aria-label="Close search"
+      >
+        <Icon name="mdi:close" class="w-6 h-6" />
+      </button>
+    </div>
+
+    <div class="p-4 pb-8">
+      <Search uiOptions={{ showImages: false, showEmptyFilters: false }} />
+    </div>
+  </div>
+</search-overlay>
+
+<style is:global>
+  :root.dark {
+    --pagefind-ui-primary: #fff; /* 主色调，用于文本 */
+    --pagefind-ui-text: #e0e0e0; /* 主要文本颜色 */
+    --pagefind-ui-secondary: #a0a0a0; /* 次要文本颜色 */
+    --pagefind-ui-background: #1a202c; /* 输入框背景 */
+    --pagefind-ui-border: #4a5568; /* 输入框边框 */
+    --pagefind-ui-active: #fff; /* 活跃状态（例如焦点边框） */
+    --pagefind-ui-tag: #718096; /* 标签颜色 */
+    --pagefind-ui-border-width: 2px; /* 焦点边框宽度 */
+  }
+
+  /* 覆盖默认的 focus 边框颜色 */
+  .dark .pagefind-ui__search-input:focus {
+    outline: 2px solid white !important; /* 强制白色 outline */
+    outline-offset: 2px !important; /* outline 与边框的距离 */
+    border-color: var(--pagefind-ui-border) !important; /* 边框保持默认色 */
+    box-shadow: none !important; /* 移除任何 box-shadow，防止与 outline 冲突 */
+    --tw-ring-color: transparent !important; /* 禁用 Tailwind ring */
+  }
+
+  /* 修复默认的图标颜色 */
+  .dark .pagefind-ui__panel svg {
+    fill: var(--pagefind-ui-text);
+  }
+</style>
+
+<script>
+  class SearchOverlay extends HTMLElement {
+    #isOpen = false;
+    #closeButton: HTMLButtonElement | null = null;
+    #backdrop: HTMLElement | null = null;
+    #content: HTMLElement | null = null;
+    #boundOnKeyDown: (e: KeyboardEvent) => void;
+
+    constructor() {
+      super();
+      this.#boundOnKeyDown = this.#onKeyDown.bind(this);
+    }
+
+    connectedCallback() {
+      this.#closeButton = this.querySelector('button[aria-label="Close search"]');
+      this.#backdrop = this.querySelector('[data-backdrop]');
+      this.#content = this.querySelector('[data-content]');
+
+      // Add click listeners
+      this.#closeButton?.addEventListener('click', () => this.close());
+      this.#backdrop?.addEventListener('click', () => this.close());
+
+      // Initialize state from attribute
+      this.attributeChangedCallback('data-is-open', 'false', this.getAttribute('data-is-open') || 'false');
+    }
+
+    attributeChangedCallback(name: string, _oldValue: string, newValue: string) {
+      if (name === 'data-is-open') {
+        this.#isOpen = newValue === 'true';
+        this.updateState();
+      }
+    }
+
+    close() {
+      // Dispatch event for parent to handle state change (if needed)
+      // or just close itself? Better to let parent (Header) manage state via attribute for single source of truth.
+      this.dispatchEvent(new CustomEvent('close-overlay', { bubbles: true }));
+    }
+
+    #onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        this.close();
+      }
+    }
+
+    updateState() {
+      if (this.#isOpen) {
+        // Show
+        this.classList.remove('opacity-0', 'invisible');
+        this.classList.add('opacity-100', 'visible');
+        
+        this.#content?.classList.remove('-translate-y-4', 'scale-95');
+        this.#content?.classList.add('translate-y-0', 'scale-100');
+
+        document.body.classList.add('overflow-hidden');
+        document.addEventListener('keydown', this.#boundOnKeyDown);
+        
+        // Focus search input after transition
+        setTimeout(() => {
+           const input = this.querySelector('input');
+           input?.focus();
+        }, 100);
+
+      } else {
+        // Hide
+        this.classList.remove('opacity-100', 'visible');
+        this.classList.add('opacity-0', 'invisible');
+
+        this.#content?.classList.remove('translate-y-0', 'scale-100');
+        this.#content?.classList.add('-translate-y-4', 'scale-95');
+
+        document.body.classList.remove('overflow-hidden');
+        document.removeEventListener('keydown', this.#boundOnKeyDown);
+      }
+    }
+
+    static get observedAttributes() {
+      return ['data-is-open'];
+    }
+  }
+
+  customElements.define('search-overlay', SearchOverlay);
+</script>

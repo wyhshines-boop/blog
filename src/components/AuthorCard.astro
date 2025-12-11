@@ -1,0 +1,65 @@
+---
+import { Image } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
+import Link from '@/components/Link.astro';
+import { ROUTES } from '@/constants/routes';
+import { formatDateIso } from '@/utils/datetime';
+import { cn } from '@/utils/styles';
+import { CATEGORIES } from '@/constants/collections';
+
+import AuthorAvatar from '@/assets/images/author_avatar.jpg';
+
+interface Props {
+  updatedDate?: Date;
+  category?: string;
+  class?: string;
+}
+
+const { updatedDate, category, class: className } = Astro.props;
+
+// Find localized category label if category exists
+const categoryData = category ? CATEGORIES.find((c) => c.name.toLowerCase() === category.toLowerCase()) : undefined;
+const categoryLabel = categoryData?.label || category;
+---
+
+<div class={cn("bg-base-200 dark:bg-[#293e61] rounded-xl p-6 shadow-sm border border-base-300 dark:border-none", className)}>
+  {/* 上半部分：作者信息 */}
+  <div class="flex items-start gap-4 mb-4">
+    <div class="shrink-0">
+      <Image 
+        src={AuthorAvatar} 
+        alt="脸哥" 
+        width={64} 
+        height={64} 
+        class="rounded-full w-16 h-16 object-cover border-2 border-white/10"
+      />
+    </div>
+    <div>
+      <h3 class="text-xl font-bold text-headings dark:text-white mb-1">脸哥</h3>
+      <p class="text-sm text-content/80 dark:text-white/70 leading-relaxed">
+        跨境电商运营，专注于 Shopify 独立站。<a href="/about" class="underline hover:text-primary transition-colors">了解更多</a>
+      </p>
+    </div>
+  </div>
+
+  {/* 分隔线 */}
+  <div class="h-px bg-base-300 dark:bg-white/10 w-full my-4"></div>
+
+  {/* 下半部分：文章元数据 */}
+  <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-content/70 dark:text-white/60">
+    {updatedDate && (
+      <span class="whitespace-nowrap">
+        此文章更新于：{formatDateIso(updatedDate)}
+      </span>
+    )}
+    
+    {category && (
+      <Link 
+        href={`${ROUTES.CATEGORIES}${category.toLowerCase()}`} 
+        class="text-primary hover:text-primary-hover dark:text-primary dark:hover:text-primary-hover font-medium flex items-center gap-1"
+      >
+        {categoryLabel}
+      </Link>
+    )}
+  </div>
+</div>

@@ -21,7 +21,7 @@ const { metadata } = Astro.props as BaseProps;
     class="relative flex flex-col min-h-screen min-w-80 bg-base-100 transition-colors duration-500"
   >
     <Header />
-    <slot />
+    <slot class="mt-12" />
     <Footer />
 
     <ScrollToTop client:only="react">

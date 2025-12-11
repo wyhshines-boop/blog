@@ -9,6 +9,7 @@ import { default as PostLayout } from '@/layouts/Post.astro';
 import Giscus from '@/components/Giscus.astro';
 import PostListMore from '@/components/PostListMore.astro';
 import PostMeta from '@/components/PostMeta.astro';
+import AuthorCard from '@/components/AuthorCard.astro'; // Import AuthorCard
 import Share from '@/components/Share.astro';
 import TableOfContents from '@/components/TableOfContents.astro';
 import TagList from '@/components/TagList.astro';
@@ -84,8 +85,6 @@ const metadata: Metadata = { title, description, image };
 
 <PostLayout {metadata}>
   <Fragment slot="hero-image">
-    {/* hero image 1280x720 max, 16:9 */}
-    {/* aspect-[16/8] should stay to prevent too tall image */}
     {
       !noHero && (
         <Image
@@ -95,7 +94,7 @@ const metadata: Metadata = { title, description, image };
           fetchpriority="high"
           loading="eager"
           itemprop="image"
-          class="block max-w-full h-auto aspect-[16/8] object-cover border border-base-300"
+          class="block w-full h-auto object-cover rounded-xl border border-base-300 shadow-sm"
           transition:name={getTransitionNameFromElementId({
             elementId: TRANSITION_ELEMENT_IDS.POST_CARD.HERO_IMAGE,
           })}
@@ -106,7 +105,8 @@ const metadata: Metadata = { title, description, image };
 
   <Fragment slot="hero-text">
     <h1
-      class="b-h1"
+      class="b-h1 text-3xl md:text-4xl font-semibold mb-4"
+      data-pagefind-meta="title"
       transition:name={getTransitionNameFromElementId({
         elementId: TRANSITION_ELEMENT_IDS.POST_CARD.TITLE,
       })}
@@ -118,7 +118,7 @@ const metadata: Metadata = { title, description, image };
     {
       description && (
         <p
-          class="font-normal text-content text-xl md:text-2xl mb-6 md:mb-8"
+          class="font-normal text-content text-lg md:text-xl mb-6 md:mb-8"
           transition:name={getTransitionNameFromElementId({
             elementId: TRANSITION_ELEMENT_IDS.POST_CARD.DESCRIPTION,
           })}
@@ -127,22 +127,23 @@ const metadata: Metadata = { title, description, image };
         </p>
       )
     }
+  </Fragment>
 
-    <PostMeta
-      {...postMetaProps}
-      transition:name={getTransitionNameFromElementId({
-        elementId: TRANSITION_ELEMENT_IDS.POST_CARD.META,
-      })}
-    />
+  <Fragment slot="toc-mobile">
+    {toc && <TableOfContents headings={headings} />}
+  </Fragment>
+
+  <Fragment slot="sidebar">
+    <AuthorCard updatedDate={updatedDate || publishDate} category={category} class="hidden lg:block mb-6" />
+    {toc && <TableOfContents headings={headings} />}
   </Fragment>
 
   <Fragment slot="content">
-    {toc && <TableOfContents headings={headings} />}
-
     <Content />
   </Fragment>
 
   <Fragment slot="after-content">
+    <AuthorCard updatedDate={updatedDate || publishDate} category={category} class="lg:hidden mb-8" />
     <div class="flex justify-between items-start gap-6 flex-col md:flex-row b-h2-mb">
       <TagList tags={tags} size="md" />
       <Share {...shareProps} />

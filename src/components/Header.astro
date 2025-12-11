@@ -4,6 +4,7 @@ import { Image } from 'astro:assets';
 
 import HeaderLink from '@/components/HeaderLink.astro';
 import ThemeToggle from '@/components/ThemeToggle.astro';
+import SearchOverlay from '@/components/SearchOverlay.astro'; // Import SearchOverlay
 import { SELECTORS } from '@/constants/dom';
 import { IMAGE_SIZES } from '@/constants/image';
 import { NAVIGATION_ITEMS } from '@/constants/navigation';
@@ -24,6 +25,16 @@ const activeNavItemPath = getActiveNavItemPath(routePathname);
 ---
 
 <header id={SCROLL_TO_TOP_ID} class="group border-b border-base-300">
+  {/* Notification Banner */}
+  <div id="top-banner" class="bg-primary dark:bg-gray-900 text-white text-sm font-medium px-4 py-2 hidden relative transition-all">
+    <div class="max-w-6xl mx-auto flex justify-center items-center text-center pr-8 md:pr-0">
+      <span>本博客正在重建中...</span>
+      <button id="close-banner" class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-white/80 hover:text-white rounded-full hover:bg-white/10 transition-colors" aria-label="关闭通知">
+        <Icon name="mdi:close" class="w-4 h-4" />
+      </button>
+    </div>
+  </div>
+
   <div
     class={cn(
       'flex gap-2',
@@ -80,6 +91,11 @@ const activeNavItemPath = getActiveNavItemPath(routePathname);
             </li>
           ))
         }
+        <li> {/* Search Button */}
+          <button id="search-button" type="button" aria-label="Open search" class="rounded-md p-2">
+            <Icon name="mdi:magnify" class="text-primary w-6 h-6" />
+          </button>
+        </li>
         <li class="shrink-0">
           <ThemeToggle />
         </li>
@@ -87,6 +103,8 @@ const activeNavItemPath = getActiveNavItemPath(routePathname);
     </nav>
   </div>
 </header>
+
+<SearchOverlay />
 
 <script>
   class MobileNavBtn extends HTMLElement {
@@ -111,4 +129,79 @@ const activeNavItemPath = getActiveNavItemPath(routePathname);
   }
 
   customElements.define('mobile-button', MobileNavBtn);
+
+  // Search Overlay Logic
+  let isSearchOverlayOpen = false; // Initial state
+
+  let searchButton = document.getElementById('search-button');
+  let searchOverlay = document.querySelector('search-overlay');
+
+  const handleOpenSearchOverlay = () => {
+    isSearchOverlayOpen = true;
+    updateSearchOverlayState();
+  };
+
+  const handleCloseSearchOverlay = () => {
+    isSearchOverlayOpen = false;
+    updateSearchOverlayState();
+  };
+
+  const updateSearchOverlayState = () => {
+    if (searchOverlay) {
+      searchOverlay.setAttribute('data-is-open', isSearchOverlayOpen.toString());
+    }
+  };
+
+  // Add event listeners when the component is loaded
+  document.addEventListener('astro:after-swap', () => {
+    // Re-attach listeners after page navigation (View Transitions)
+    const newSearchButton = document.getElementById('search-button');
+    const newSearchOverlay = document.querySelector('search-overlay');
+
+    if (newSearchButton) {
+      newSearchButton.removeEventListener('click', handleOpenSearchOverlay); // Remove old listener
+      newSearchButton.addEventListener('click', handleOpenSearchOverlay); // Add new listener
+    }
+    // Update the reference to the new search overlay custom element
+    searchOverlay = newSearchOverlay; 
+    
+    // Ensure the overlay also re-attaches its internal listeners
+    if (searchOverlay) {
+      searchOverlay.removeEventListener('close-overlay', handleCloseSearchOverlay);
+      searchOverlay.addEventListener('close-overlay', handleCloseSearchOverlay);
+    }
+  });
+
+  // Initial attachment of event listeners
+  if (searchButton) {
+    searchButton.addEventListener('click', handleOpenSearchOverlay);
+  }
+  if (searchOverlay) {
+    searchOverlay.addEventListener('close-overlay', handleCloseSearchOverlay);
+  }
+
+  // Notification Banner Logic
+  const setupBanner = () => {
+    const banner = document.getElementById('top-banner');
+    const closeBtn = document.getElementById('close-banner');
+    const BANNER_KEY = 'banner-migration-closed';
+
+    if (banner && closeBtn) {
+      const isClosed = localStorage.getItem(BANNER_KEY);
+      if (!isClosed) {
+        banner.classList.remove('hidden');
+      }
+
+      closeBtn.addEventListener('click', () => {
+        banner.classList.add('hidden');
+        localStorage.setItem(BANNER_KEY, 'true');
+      });
+    }
+  };
+
+  // Run on initial load
+  setupBanner();
+
+  // Run on subsequent navigations
+  document.addEventListener('astro:after-swap', setupBanner);
 </script>

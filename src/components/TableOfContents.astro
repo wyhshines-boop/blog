@@ -19,26 +19,81 @@ const { headings, class: className } = Astro.props as Props;
 const getHref = (slug: string) => `#${slug}`;
 ---
 
-<aside class={cn('toc md:max-w-lg rounded-box border border-base-300 p-4 mx-auto', className)}>
-  <h2 class="b-h2 mt-4">Table of contents</h2>
+<aside class={cn('toc lg:max-w-xs py-2 px-4 border-l-4 border-[#293e61]', className)}>
+  <h2 class="text-base font-bold mt-0 mb-4">本页内容</h2>
 
-  <ol class="ol-nested-decimal my-0">
+  <ul class="my-0">
     {
       headings.map(({ slug, text, headings: subHeadings }) => (
         <li class="my-0">
           <Link href={getHref(slug)}>{text}</Link>
 
           {subHeadings.length > 0 && (
-            <ol class="mt-0 mb-2">
+            <ul class="mt-0 mb-2 pl-4">
               {subHeadings.map(({ slug, text }) => (
                 <li class="my-0">
                   <Link href={getHref(slug)}>{text}</Link>
                 </li>
               ))}
-            </ol>
+            </ul>
           )}
         </li>
       ))
     }
-  </ol>
+  </ul>
 </aside>
+
+<style>
+  .toc ul {
+    list-style: none; /* 移除列表标记 */
+    padding-left: 0;
+  }
+  .toc li {
+    margin-bottom: 0.5rem; /* 调整行间距 */
+  }
+  .toc .link-nav {
+    color: white !important; /* 强制所有目录项为白色 */
+    text-decoration: none; /* 移除下划线 */
+    font-weight: normal; /* 保持普通字体 */
+    transition: all 0.2s;
+  }
+  .toc .link-nav.active {
+    color: var(--th-primary) !important; /* 活跃项保持绿色 */
+    font-weight: bold; /* 活跃项加粗 */
+  }
+</style>
+
+<script>
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px 0px -80% 0px', // Trigger when heading is near top
+    threshold: 1.0
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        const tocLinks = document.querySelectorAll('.toc a');
+        
+        tocLinks.forEach((link) => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === `#${id}`) {
+            link.classList.add('active');
+          }
+        });
+      }
+    });
+  }, observerOptions);
+
+  // Re-run on page load and after View Transitions
+  const setupToc = () => {
+    const headings = document.querySelectorAll('article h2, article h3'); // Adjust selector based on your content structure
+    headings.forEach((heading) => {
+      observer.observe(heading);
+    });
+  };
+
+  document.addEventListener('astro:page-load', setupToc);
+  document.addEventListener('DOMContentLoaded', setupToc);
+</script>

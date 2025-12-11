@@ -1,0 +1,1 @@
+import{S as d}from"./dom.Dv_aSaFD.js";import{g as m,T as r,M as o}from"./theme.Dpea0inq.js";const{CHANGE_EVENT:a}=r,{GITHUB_MARKDOWN_BODY_SELECTOR:E}=d,n=e=>{const t=document.querySelector(E);t&&(t&&e===o.dark?t.setAttribute("data-theme",o.dark):t.setAttribute("data-theme",o.light))},c=m();n(c);document.addEventListener(a,async e=>{const t=e,{mode:s}=t.detail.theme;n(s)});

@@ -5,7 +5,8 @@ import partytown from '@astrojs/partytown';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import icon from 'astro-icon';
-import vercel from '@astrojs/vercel'; // Vercel adapter
+import pagefind from 'astro-pagefind';
+import vercel from '@astrojs/vercel';
 import { defineConfig } from 'astro/config';
 
 
@@ -42,6 +43,7 @@ export default defineConfig({
     // applyBaseStyles: false prevents double loading of tailwind
     tailwind({ applyBaseStyles: false }),
     icon({ iconDir: 'src/assets/icons' }),
+    pagefind(),
     partytown({
       config: { forward: ['dataLayer.push'] },
     }),

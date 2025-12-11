@@ -1,0 +1,519 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content=""><link rel="canonical" href="https://facechuhai.com/blog/explore/1/"><link rel="apple-touch-icon" sizes="180x180" href="/images/favicons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicons/favicon-16x16.png"><link rel="manifest" href="/manifest.json"><title>Explore - 脸哥出海</title><meta name="title" content="Explore - 脸哥出海"><meta name="description" content="Shopify 独立站运营与出海教程。提供从建站基础、选品策略、流量获取到数据分析的全流程学习路径"><meta name="author" content="脸哥出海"><link rel="alternate" type="application/rss+xml" title="RSS feed for localhost:3000" href="/api/feed.xml"><link rel="alternate" type="application/json" title="JSON feed for localhost:3000" href="/api/feed.json"><link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap-index.xml"><meta property="og:type" content="website"><meta property="og:url" content="http://localhost:3000/blog/explore/1/"><meta property="og:title" content="Explore - 脸哥出海"><meta property="og:description" content="Shopify 独立站运营与出海教程。提供从建站基础、选品策略、流量获取到数据分析的全流程学习路径"><meta property="og:image" content="http://localhost:3000/api/open-graph/lists/blog/explore.png"><meta property="twitter:card" content="summary"><meta property="twitter:url" content="http://localhost:3000/blog/explore/1/"><meta property="twitter:title" content="Explore - 脸哥出海"><meta property="twitter:description" content="Shopify 独立站运营与出海教程。提供从建站基础、选品策略、流量获取到数据分析的全流程学习路径"><meta property="twitter:image" content="http://localhost:3000/api/open-graph/lists/blog/explore.png"><script>(function(){const themeConstants = {"DEFAULT_THEMES":{"light":{"mode":"light","name":"default-light"},"dark":{"mode":"dark","name":"default-dark"}},"MODES":{"dark":"dark","light":"light"},"THEMES":[{"mode":"light","name":"default-light"},{"mode":"dark","name":"default-dark"},{"mode":"light","name":"green-light"},{"mode":"dark","name":"green-dark"}],"THEME_CONFIG":{"MODE_CLASS":"dark","DATA_ATTRIBUTE":"data-theme","CHANGE_EVENT":"theme-change","LOCAL_STORAGE_KEY":"theme"}};
+const defaultThemes = {"light":{"mode":"light","name":"default-light"},"dark":{"mode":"dark","name":"default-dark"}};
+const DEFAULT_MODE = "light";
+const THEME_META_TAG_SELECTOR = "meta[name=\"theme-color\"]";
+
+  // this is JavaScript, not TypeScript
+  const { MODES, THEMES, THEME_CONFIG } = themeConstants;
+  const { DATA_ATTRIBUTE, CHANGE_EVENT, LOCAL_STORAGE_KEY } = THEME_CONFIG;
+
+  // used for event
+  const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)');
+
+  const getDefaultTheme = (themeMode) => defaultThemes[themeMode];
+
+  const getThemeNamePrefix = (themeName) => themeName.split('-')?.[0];
+
+  const getThemeFromMode = (themeMode) => {
+    const currentTheme = getTheme();
+
+    const newTheme = THEMES.find((theme) => {
+      const currentThemePrefix = getThemeNamePrefix(currentTheme.name);
+      const themePrefix = getThemeNamePrefix(theme.name);
+
+      const isModeMatch = theme.mode === themeMode;
+      const isThemeNameMatch =
+        themePrefix && currentThemePrefix && themePrefix === currentThemePrefix;
+
+      const isFound = isModeMatch && isThemeNameMatch;
+
+      return isFound;
+    });
+
+    const defaultTheme = getDefaultTheme(themeMode);
+    const resultTheme = newTheme ?? defaultTheme;
+
+    return resultTheme;
+  };
+
+  /** 'dark' | 'light' | null */
+  const getBrowserMode = () => {
+    const lightModePreference = window.matchMedia('(prefers-color-scheme: light)');
+
+    let browserMode;
+
+    switch (true) {
+      case darkModePreference.matches:
+        browserMode = MODES.dark;
+        break;
+      case lightModePreference.matches:
+        browserMode = MODES.light;
+        break;
+      default:
+        browserMode = null;
+        break;
+    }
+    return browserMode;
+  };
+
+  /**
+   * 1. stored mode
+   * 2. browser mode and theme
+   * 3. default app mode, config
+   */
+  const getTheme = () => {
+    // either from storage
+    const storedTheme = getStoredTheme();
+    if (storedTheme) return storedTheme;
+
+    // or fallback to default theme for browser mode
+    const browserMode = getBrowserMode();
+    if (browserMode) {
+      const defaultBrowserTheme = getDefaultTheme(browserMode);
+      return defaultBrowserTheme;
+    }
+
+    // fallback to app default
+    const defaultAppTheme = getDefaultTheme(DEFAULT_MODE);
+    return defaultAppTheme;
+  };
+
+  const getStoredTheme = () => {
+    const storedThemeString =
+      typeof localStorage !== 'undefined' && localStorage.getItem(LOCAL_STORAGE_KEY);
+
+    if (!storedThemeString) return null;
+
+    let storedTheme;
+    try {
+      storedTheme = JSON.parse(storedThemeString);
+    } catch (_error) {
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+      return null;
+    }
+
+    // invalid theme
+    if (!(storedTheme && storedTheme.name && storedTheme.mode)) {
+      // clear stored invalid theme
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+      return null;
+    }
+
+    return storedTheme;
+  };
+
+  const setTheme = (newTheme) => {
+    const validatedTheme = THEMES.find(
+      (theme) => theme.name === newTheme.name && theme.mode === newTheme.mode
+    );
+
+    if (!validatedTheme)
+      // eslint-disable-next-line no-console
+      return console.warn(
+        `Invalid theme value '${JSON.stringify(newTheme)}' received. Expected ${JSON.stringify(THEMES)}.`
+      );
+
+    const root = document.documentElement;
+
+    const isDarkMode = root.classList.contains(MODES.dark);
+    const existingTheme = {
+      name: root.getAttribute(DATA_ATTRIBUTE),
+      mode: isDarkMode ? MODES.dark : MODES.light,
+    };
+    const isExistingTheme =
+      newTheme.name === existingTheme.name && newTheme.mode === existingTheme.mode;
+
+    // root already set to newTheme, exit early
+    if (isExistingTheme) return;
+
+    // update root class and data-theme
+    root.setAttribute(DATA_ATTRIBUTE, newTheme.name);
+    if (newTheme.mode === MODES.dark) {
+      // dark
+      if (!isDarkMode) root.classList.add(MODES.dark);
+    } else {
+      // light
+      if (isDarkMode) root.classList.remove(MODES.dark);
+    }
+
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newTheme));
+    }
+
+    // must have dealy for bg color to apply
+    setTimeout(() => updateMetaTag(), 1000);
+  };
+
+  const updateMetaTag = () => {
+    const bodyElement = document.body;
+    if (!bodyElement) return;
+
+    const computedStyles = window.getComputedStyle(bodyElement);
+    const bgColor = computedStyles.backgroundColor;
+
+    const metaElement = document.querySelector(THEME_META_TAG_SELECTOR);
+    if (!metaElement) return;
+
+    metaElement.setAttribute('content', bgColor);
+  };
+
+  // initial setup
+  setTheme(getTheme());
+
+  // View Transitions hook to restore theme
+  document.addEventListener('astro:after-swap', () => setTheme(getTheme()));
+
+  // listen for theme-change custom event, fired in src/components/ThemeToggle.astro
+  document.addEventListener(CHANGE_EVENT, (event) => {
+    setTheme(event.detail.theme);
+  });
+
+  // listen for prefers-color-scheme change
+  darkModePreference.addEventListener('change', (event) => {
+    const newMode = event.matches ? MODES.dark : MODES.light;
+    const newTheme = getThemeFromMode(newMode);
+
+    // trigger event instead of setTheme(newTheme), for Links page
+    const payload = { detail: { theme: newTheme } };
+    const themeChangeEvent = new CustomEvent(CHANGE_EVENT, payload);
+
+    document.dispatchEvent(themeChangeEvent);
+  });
+})();</script><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="none"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.QW52Ox2j.js"></script><!-- 
+    <style>
+    @view-transition {
+      navigation: auto; /* enabled! */
+    }
+    </style> 
+  --><link rel="stylesheet" href="/_astro/_page_.L0n7oUnG.css">
+<link rel="stylesheet" href="/_astro/_page_.P3QuAuwJ.css">
+<link rel="stylesheet" href="/_astro/embeds.DOQCwFhQ.css">
+<style>svg[data-astro-cid-xedwvne4]:hover{fill:#ea4335}svg[data-astro-cid-jq7mugjv]:hover{fill:#1877f2}svg[data-astro-cid-peyfddsg]:hover{fill:#f0652f}svg[data-astro-cid-c6nb6g5k]:hover{fill:#0a66c2}svg[data-astro-cid-u5iaqakb]:hover{fill:#ff4500}svg[data-astro-cid-rfgdwxli]:hover{fill:#000}svg[data-astro-cid-7mefdlfy]:hover{fill:#000}svg[data-astro-cid-46gv4vn2]:hover{fill:#25d366}svg[data-astro-cid-3zgsqiyo]:hover{fill:#00ab6c}svg[data-astro-cid-6zlhj7vn]:hover{fill:#0085ff}.astro-social-share{margin:20px 0;height:24px;display:inline-flex}.astro-social-share a{text-decoration:none;margin-right:10px}.astro-social-share svg{height:24px}.astro-social-share{margin-top:0;margin-bottom:0}.social-share-btn{margin-right:1rem!important;display:inline-block;height:1.5rem;width:1.5rem}.social-share-btn svg{height:100%;width:100%;fill:var(--th-captions)}
+@keyframes astroFadeInOut{0%{opacity:1}to{opacity:0}}@keyframes astroFadeIn{0%{opacity:0;mix-blend-mode:plus-lighter}to{opacity:1;mix-blend-mode:plus-lighter}}@keyframes astroFadeOut{0%{opacity:1;mix-blend-mode:plus-lighter}to{opacity:0;mix-blend-mode:plus-lighter}}@keyframes astroSlideFromRight{0%{transform:translate(100%)}}@keyframes astroSlideFromLeft{0%{transform:translate(-100%)}}@keyframes astroSlideToRight{to{transform:translate(100%)}}@keyframes astroSlideToLeft{to{transform:translate(-100%)}}@media(prefers-reduced-motion){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}[data-astro-transition-scope]{animation:none!important}}
+</style>
+<link rel="stylesheet" href="/_astro/Gallery.DSulWsr7.css"><script>!(function(w,p,f,c){if(!window.crossOriginIsolated && !navigator.serviceWorker) return;c=w[p]=Object.assign(w[p]||{},{"lib":"/~partytown/","debug":false});c[f]=(c[f]||[]).concat(["dataLayer.push"])})(window,'partytown','forward');/* Partytown 0.11.2 - MIT QwikDev */
+const t={preserveBehavior:!1},e=e=>{if("string"==typeof e)return[e,t];const[n,r=t]=e;return[n,{...t,...r}]},n=Object.freeze((t=>{const e=new Set;let n=[];do{Object.getOwnPropertyNames(n).forEach((t=>{"function"==typeof n[t]&&e.add(t)}))}while((n=Object.getPrototypeOf(n))!==Object.prototype);return Array.from(e)})());!function(t,r,o,i,a,s,c,l,d,p,u=t,f){function h(){f||(f=1,"/"==(c=(s.lib||"/~partytown/")+(s.debug?"debug/":""))[0]&&(d=r.querySelectorAll('script[type="text/partytown"]'),i!=t?i.dispatchEvent(new CustomEvent("pt1",{detail:t})):(l=setTimeout(v,(null==s?void 0:s.fallbackTimeout)||1e4),r.addEventListener("pt0",w),a?y(1):o.serviceWorker?o.serviceWorker.register(c+(s.swPath||"partytown-sw.js"),{scope:c}).then((function(t){t.active?y():t.installing&&t.installing.addEventListener("statechange",(function(t){"activated"==t.target.state&&y()}))}),console.error):v())))}function y(e){p=r.createElement(e?"script":"iframe"),t._pttab=Date.now(),e||(p.style.display="block",p.style.width="0",p.style.height="0",p.style.border="0",p.style.visibility="hidden",p.setAttribute("aria-hidden",!0)),p.src=c+"partytown-"+(e?"atomics.js?v=0.11.2":"sandbox-sw.html?"+t._pttab),r.querySelector(s.sandboxParent||"body").appendChild(p)}function v(n,o){for(w(),i==t&&(s.forward||[]).map((function(n){const[r]=e(n);delete t[r.split(".")[0]]})),n=0;n<d.length;n++)(o=r.createElement("script")).innerHTML=d[n].innerHTML,o.nonce=s.nonce,r.head.appendChild(o);p&&p.parentNode.removeChild(p)}function w(){clearTimeout(l)}s=t.partytown||{},i==t&&(s.forward||[]).map((function(r){const[o,{preserveBehavior:i}]=e(r);u=t,o.split(".").map((function(e,r,o){var a;u=u[o[r]]=r+1<o.length?u[o[r]]||(a=o[r+1],n.includes(a)?[]:{}):(()=>{let e=null;if(i){const{methodOrProperty:n,thisObject:r}=((t,e)=>{let n=t;for(let t=0;t<e.length-1;t+=1)n=n[e[t]];return{thisObject:n,methodOrProperty:e.length>0?n[e[e.length-1]]:void 0}})(t,o);"function"==typeof n&&(e=(...t)=>n.apply(r,...t))}return function(){let n;return e&&(n=e(arguments)),(t._ptf=t._ptf||[]).push(o,arguments),n}})()}))})),"complete"==r.readyState?h():(t.addEventListener("DOMContentLoaded",h),t.addEventListener("load",h))}(window,document,navigator,top,window.crossOriginIsolated);;(e=>{e.addEventListener("astro:before-swap",e=>{let r=document.body.querySelector("iframe[src*='/~partytown/']");if(r)e.newDocument.body.append(r)})})(document);</script><style>[data-astro-transition-scope="astro-lcolfsly-1"] { view-transition-name: explore-year-2025; }@layer astro { ::view-transition-old(explore-year-2025) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(explore-year-2025) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(explore-year-2025) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(explore-year-2025) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-lcolfsly-1"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-lcolfsly-1"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-lcolfsly-1"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-lcolfsly-1"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-lcolfsly-1"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-lcolfsly-1"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-lcolfsly-1"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-lcolfsly-1"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-6rimmypj-2"] { view-transition-name: post-card-hero-image-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx; }@layer astro { ::view-transition-old(post-card-hero-image-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(post-card-hero-image-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(post-card-hero-image-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(post-card-hero-image-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-6rimmypj-2"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-6rimmypj-2"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-6rimmypj-2"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-6rimmypj-2"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-6rimmypj-2"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-6rimmypj-2"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-6rimmypj-2"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-6rimmypj-2"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-ssixv3gx-3"] { view-transition-name: post-card-title-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx; }@layer astro { ::view-transition-old(post-card-title-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(post-card-title-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(post-card-title-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(post-card-title-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-ssixv3gx-3"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-ssixv3gx-3"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-ssixv3gx-3"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-ssixv3gx-3"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-ssixv3gx-3"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-ssixv3gx-3"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-ssixv3gx-3"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-ssixv3gx-3"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-6x2d7el3-4"] { view-transition-name: post-card-description-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx; }@layer astro { ::view-transition-old(post-card-description-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(post-card-description-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(post-card-description-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(post-card-description-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-6x2d7el3-4"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-6x2d7el3-4"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-6x2d7el3-4"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-6x2d7el3-4"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-6x2d7el3-4"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-6x2d7el3-4"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-6x2d7el3-4"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-6x2d7el3-4"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-7zkrarmn-5"] { view-transition-name: post-card-meta-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx; }@layer astro { ::view-transition-old(post-card-meta-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(post-card-meta-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(post-card-meta-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(post-card-meta-add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-7zkrarmn-5"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-7zkrarmn-5"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-7zkrarmn-5"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-7zkrarmn-5"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-7zkrarmn-5"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-7zkrarmn-5"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-7zkrarmn-5"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-7zkrarmn-5"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-6rimmypj-6"] { view-transition-name: post-card-hero-image-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx; }@layer astro { ::view-transition-old(post-card-hero-image-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(post-card-hero-image-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(post-card-hero-image-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(post-card-hero-image-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-6rimmypj-6"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-6rimmypj-6"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-6rimmypj-6"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-6rimmypj-6"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-6rimmypj-6"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-6rimmypj-6"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-6rimmypj-6"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-6rimmypj-6"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-ssixv3gx-7"] { view-transition-name: post-card-title-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx; }@layer astro { ::view-transition-old(post-card-title-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(post-card-title-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(post-card-title-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(post-card-title-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-ssixv3gx-7"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-ssixv3gx-7"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-ssixv3gx-7"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-ssixv3gx-7"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-ssixv3gx-7"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-ssixv3gx-7"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-ssixv3gx-7"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-ssixv3gx-7"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-6x2d7el3-8"] { view-transition-name: post-card-description-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx; }@layer astro { ::view-transition-old(post-card-description-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(post-card-description-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(post-card-description-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(post-card-description-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-6x2d7el3-8"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-6x2d7el3-8"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-6x2d7el3-8"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-6x2d7el3-8"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-6x2d7el3-8"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-6x2d7el3-8"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-6x2d7el3-8"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-6x2d7el3-8"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-7zkrarmn-9"] { view-transition-name: post-card-meta-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx; }@layer astro { ::view-transition-old(post-card-meta-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(post-card-meta-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(post-card-meta-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(post-card-meta-prevent-credit-card-fraud-chargebacks-shopify-index_2emdx) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-7zkrarmn-9"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-7zkrarmn-9"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-7zkrarmn-9"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-7zkrarmn-9"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-7zkrarmn-9"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-7zkrarmn-9"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-7zkrarmn-9"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-7zkrarmn-9"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style></head><body class="relative flex flex-col min-h-screen min-w-80 bg-base-100 transition-colors duration-500"> <header id="main-header" class="group border-b border-base-300">  <div id="top-banner" class="bg-primary dark:bg-gray-900 text-white text-sm font-medium px-4 py-2 hidden relative transition-all"> <div class="max-w-6xl mx-auto flex justify-center items-center text-center pr-8 md:pr-0"> <span>本博客正在重建中...</span> <button id="close-banner" class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-white/80 hover:text-white rounded-full hover:bg-white/10 transition-colors" aria-label="关闭通知"> <svg width="1em" height="1em" viewBox="0 0 24 24" class="w-4 h-4" data-icon="mdi:close">   <use href="#ai:mdi:close"></use>  </svg> </button> </div> </div> <div class="flex gap-2 group-[.menu-open]:flex-col md:!flex-row md:justify-between md:items-center max-w-6xl py-2 px-4 md:mx-auto">  <div class="w-full md:w-auto flex justify-between items-center"> <a class="link-default link-nav flex flex-row items-center gap-2 text-xl xs:text-2xl" href="/" style>   <img src="/_astro/avatar.BRx2W3og_Z1TO6cQ.webp" srcset="/_astro/avatar.BRx2W3og_Z1TO6cQ.webp 1x, /_astro/avatar.BRx2W3og_Z23D99K.webp 2x" loading="eager" alt="Profile picture" decoding="async" fetchpriority="auto" width="48" height="48" class="shrink-0 select-none rounded-md"> <span> 脸哥出海 </span>   </a> <mobile-button class="md:hidden"> <button aria-expanded="false" aria-haspopup="menu" aria-label="Open main menu" type="button" class="group"> <svg width="1em" height="1em" class="h-6 w-6 group-aria-expanded:hidden" data-icon="mdi:hamburger-menu">   <symbol id="ai:mdi:hamburger-menu" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></symbol><use href="#ai:mdi:hamburger-menu"></use>  </svg> <svg width="1em" height="1em" class="h-6 w-6 hidden group-aria-expanded:block" data-icon="mdi:close">   <symbol id="ai:mdi:close" viewBox="0 0 24 24"><path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"/></symbol><use href="#ai:mdi:close"></use>  </svg> </button> </mobile-button> </div>  <nav class="select-none hidden md:block group-[.menu-open]:block mt-0 group-[.menu-open]:mt-2" aria-label="Site navigation"> <ul class="flex gap-6 group-[.menu-open]:flex-col md:!flex-row md:items-center"> <li> <a class="link-default link-nav inline-flex items-center" href="/blog/categories/shopify" style>  <svg width="1em" height="1em" class="w-5 h-5 mr-1" data-icon="mdi:shopify">   <symbol id="ai:mdi:shopify" viewBox="0 0 24 24"><path d="M18.61 5.89c-.01-.1-.11-.16-.17-.16c-.07-.01-1.61-.12-1.61-.12s-1.07-1.06-1.18-1.18c-.12-.12-.35-.08-.44-.06c-.01 0-.21.07-.6.18c-.36-1.05-.99-1.97-2.18-1.97c-.32-.4-.71-.58-1.05-.58c-2.58 0-3.81 3.22-4.2 4.86l-1.81.56c-.55.18-.57.2-.64.72c-.06.4-1.52 11.72-1.52 11.72L14.61 22l6.18-1.34S18.62 6 18.61 5.89M14 4.76c-.31.09-.63.19-1 .3v-.21c0-.64-.07-1.15-.21-1.56c.56.07.94.71 1.21 1.47m-1.92-1.34c.16.4.26.97.26 1.74v.11c-.63.19-1.31.41-1.99.62c.38-1.49 1.1-2.2 1.73-2.47m-.77-.73c.11 0 .22.04.33.11c-.83.39-1.71 1.37-2.09 3.32c-.55.18-1.08.34-1.55.5c.42-1.5 1.46-3.93 3.31-3.93m1.19 6.46l-.74 2.27s-.67-.36-1.49-.36c-1.2 0-1.27.75-1.27.94c0 1.04 2.71 1.43 2.71 3.86c0 1.91-1.21 3.14-2.84 3.14c-1.96 0-2.96-1.22-2.96-1.22l.52-1.73s1.03.88 1.9.88c.57 0 .8-.43.8-.77c0-1.35-2.21-1.41-2.21-3.63c0-1.87 1.34-3.68 4.05-3.68c1.03 0 1.53.3 1.53.3m2.93-3.86l1.32 1.31l.96.08c.34 2.32 1.48 10.05 1.95 13.2l-5 1.09l.77-15.68z" fill="currentColor"/></symbol><use href="#ai:mdi:shopify"></use>  </svg>Shopify独立站  </a> </li><li> <a class="link-default link-nav inline-flex items-center" href="/blog/categories/payment" style>  <svg width="1em" height="1em" class="w-5 h-5 mr-1" data-icon="mdi:credit-card-check-outline">   <symbol id="ai:mdi:credit-card-check-outline" viewBox="0 0 24 24"><path fill="currentColor" d="M13 19c0-.34.04-.67.09-1H3v-6h16v1c.7 0 1.37.13 2 .35V6c0-1.11-.89-2-2-2H3c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h10.09c-.05-.33-.09-.66-.09-1M3 6h16v2H3zm14.75 16L15 19l1.16-1.16l1.59 1.59l3.59-3.59l1.16 1.41z"/></symbol><use href="#ai:mdi:credit-card-check-outline"></use>  </svg>收款  </a> </li><li> <a class="link-default link-nav inline-flex items-center" href="/blog/categories/website" style>  <svg width="1em" height="1em" class="w-5 h-5 mr-1" data-icon="mdi:web">   <symbol id="ai:mdi:web" viewBox="0 0 24 24"><path fill="currentColor" d="M16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2m-5.15 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56M14.34 14H9.66c-.1-.66-.16-1.32-.16-2s.06-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2M12 19.96c-.83-1.2-1.5-2.53-1.91-3.96h3.82c-.41 1.43-1.08 2.76-1.91 3.96M8 8H5.08A7.92 7.92 0 0 1 9.4 4.44C8.8 5.55 8.35 6.75 8 8m-2.92 8H8c.35 1.25.8 2.45 1.4 3.56A8 8 0 0 1 5.08 16m-.82-2C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2M12 4.03c.83 1.2 1.5 2.54 1.91 3.97h-3.82c.41-1.43 1.08-2.77 1.91-3.97M18.92 8h-2.95a15.7 15.7 0 0 0-1.38-3.56c1.84.63 3.37 1.9 4.33 3.56M12 2C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2"/></symbol><use href="#ai:mdi:web"></use>  </svg>建站  </a> </li><li> <a class="link-default link-nav inline-flex items-center underline text-links" href="/blog/explore/" style>  <svg width="1em" height="1em" class="w-5 h-5 mr-1" data-icon="mdi:book-open-blank-variant-outline">   <symbol id="ai:mdi:book-open-blank-variant-outline" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21.5c-1.35-.85-3.8-1.5-5.5-1.5c-1.65 0-3.35.3-4.75 1.05c-.1.05-.15.05-.25.05c-.25 0-.5-.25-.5-.5V6c.6-.45 1.25-.75 2-1c1.11-.35 2.33-.5 3.5-.5c1.95 0 4.05.4 5.5 1.5c1.45-1.1 3.55-1.5 5.5-1.5c1.17 0 2.39.15 3.5.5c.75.25 1.4.55 2 1v14.6c0 .25-.25.5-.5.5c-.1 0-.15 0-.25-.05c-1.4-.75-3.1-1.05-4.75-1.05c-1.7 0-4.15.65-5.5 1.5m-1-14c-1.36-.6-3.16-1-4.5-1c-1.2 0-2.4.15-3.5.5v11.5c1.1-.35 2.3-.5 3.5-.5c1.34 0 3.14.4 4.5 1zM13 19c1.36-.6 3.16-1 4.5-1c1.2 0 2.4.15 3.5.5V7c-1.1-.35-2.3-.5-3.5-.5c-1.34 0-3.14.4-4.5 1z"/></symbol><use href="#ai:mdi:book-open-blank-variant-outline"></use>  </svg>所有教程  </a> </li><li> <a class="link-default link-nav inline-flex items-center" href="/about/" style>  <svg width="1em" height="1em" class="w-5 h-5 mr-1" data-icon="mdi:clipboard-account-outline">   <symbol id="ai:mdi:clipboard-account-outline" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4.18C9.6 1.84 10.7 1 12 1s2.4.84 2.82 2zm-7 0a1 1 0 0 0-1 1a1 1 0 0 0 1 1a1 1 0 0 0 1-1a1 1 0 0 0-1-1M7 7V5H5v14h14V5h-2v2zm5 2a2 2 0 0 1 2 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2m-4 8v-1c0-1.1 1.79-2 4-2s4 .9 4 2v1z"/></symbol><use href="#ai:mdi:clipboard-account-outline"></use>  </svg>关于  </a> </li> <li>  <button id="search-button" type="button" aria-label="Open search" class="rounded-md p-2"> <svg width="1em" height="1em" class="text-primary w-6 h-6" data-icon="mdi:magnify">   <symbol id="ai:mdi:magnify" viewBox="0 0 24 24"><path fill="currentColor" d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5l-1.5 1.5l-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16A6.5 6.5 0 0 1 3 9.5A6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14S14 12 14 9.5S12 5 9.5 5"/></symbol><use href="#ai:mdi:magnify"></use>  </svg> </button> </li> <li class="shrink-0"> <theme-toggle> <button class="rounded-md p-2" type="button"> <svg width="1em" height="1em" class="inline-block dark:hidden text-primary w-6 h-6" data-icon="mdi:white-balance-sunny">   <symbol id="ai:mdi:white-balance-sunny" viewBox="0 0 24 24"><path fill="currentColor" d="m3.55 19.09l1.41 1.41l1.8-1.79l-1.42-1.42M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6s6-2.69 6-6c0-3.32-2.69-6-6-6m8 7h3v-2h-3m-2.76 7.71l1.8 1.79l1.41-1.41l-1.79-1.8M20.45 5l-1.41-1.4l-1.8 1.79l1.42 1.42M13 1h-2v3h2M6.76 5.39L4.96 3.6L3.55 5l1.79 1.81zM1 13h3v-2H1m12 9h-2v3h2"/></symbol><use href="#ai:mdi:white-balance-sunny"></use>  </svg> <svg width="1em" height="1em" class="hidden dark:inline-block text-primary w-6 h-6" data-icon="mdi:moon-waning-crescent">   <symbol id="ai:mdi:moon-waning-crescent" viewBox="0 0 24 24"><path fill="currentColor" d="M2 12a10 10 0 0 0 13 9.54a10 10 0 0 1 0-19.08A10 10 0 0 0 2 12"/></symbol><use href="#ai:mdi:moon-waning-crescent"></use>  </svg> </button> </theme-toggle> <script type="module" src="/_astro/ThemeToggle.astro_astro_type_script_index_0_lang.D5ntjtj5.js"></script> </li> </ul> </nav> </div> </header> <search-overlay class="fixed inset-0 z-50 flex items-start justify-center p-4 transition-opacity duration-300 opacity-0 invisible" aria-modal="true" role="dialog" tabindex="-1" data-is-open="false"> <div class="fixed inset-0 bg-black/50" aria-hidden="true" data-backdrop></div> <div class="relative bg-base-100 rounded-lg shadow-xl w-full max-w-2xl transform transition-all duration-300 -translate-y-4 scale-95" data-content> <div class="flex justify-end p-2"> <button type="button" class="text-captions hover:text-primary transition-colors" aria-label="Close search"> <svg width="1em" height="1em" viewBox="0 0 24 24" class="w-6 h-6" data-icon="mdi:close">   <use href="#ai:mdi:close"></use>  </svg> </button> </div> <div class="p-4 pb-8"> <div class="pagefind-init" data-pagefind-ui data-bundle-path="/pagefind/" data-ui-options="{&#34;showImages&#34;:false,&#34;showEmptyFilters&#34;:false}"></div> <script type="module" src="/_astro/Search.astro_astro_type_script_index_0_lang.mkdr79ir.js"></script> </div> </div> </search-overlay>  <script type="module">class s extends HTMLElement{#s=!1;#i=null;#a=null;#t=null;#e;constructor(){super(),this.#e=this.#l.bind(this)}connectedCallback(){this.#i=this.querySelector('button[aria-label="Close search"]'),this.#a=this.querySelector("[data-backdrop]"),this.#t=this.querySelector("[data-content]"),this.#i?.addEventListener("click",()=>this.close()),this.#a?.addEventListener("click",()=>this.close()),this.attributeChangedCallback("data-is-open","false",this.getAttribute("data-is-open")||"false")}attributeChangedCallback(t,a,e){t==="data-is-open"&&(this.#s=e==="true",this.updateState())}close(){this.dispatchEvent(new CustomEvent("close-overlay",{bubbles:!0}))}#l(t){t.key==="Escape"&&this.close()}updateState(){this.#s?(this.classList.remove("opacity-0","invisible"),this.classList.add("opacity-100","visible"),this.#t?.classList.remove("-translate-y-4","scale-95"),this.#t?.classList.add("translate-y-0","scale-100"),document.body.classList.add("overflow-hidden"),document.addEventListener("keydown",this.#e),setTimeout(()=>{this.querySelector("input")?.focus()},100)):(this.classList.remove("opacity-100","visible"),this.classList.add("opacity-0","invisible"),this.#t?.classList.remove("translate-y-0","scale-100"),this.#t?.classList.add("-translate-y-4","scale-95"),document.body.classList.remove("overflow-hidden"),document.removeEventListener("keydown",this.#e))}static get observedAttributes(){return["data-is-open"]}}customElements.define("search-overlay",s);</script> <script type="module">class d extends HTMLElement{headerEl;menuOpen;mobileButtonEl;toggleMobileMenu=()=>{this.headerEl.classList.toggle("menu-open"),this.menuOpen=!this.menuOpen,this.mobileButtonEl.setAttribute("aria-expanded",this.menuOpen.toString())};constructor(){super(),this.headerEl=document.getElementById("main-header"),this.mobileButtonEl=this.querySelector("button"),this.menuOpen=!1,this.mobileButtonEl.addEventListener("click",this.toggleMobileMenu)}}customElements.define("mobile-button",d);let a=!1,r=document.getElementById("search-button"),t=document.querySelector("search-overlay");const s=()=>{a=!0,c()},o=()=>{a=!1,c()},c=()=>{t&&t.setAttribute("data-is-open",a.toString())};document.addEventListener("astro:after-swap",()=>{const e=document.getElementById("search-button"),n=document.querySelector("search-overlay");e&&(e.removeEventListener("click",s),e.addEventListener("click",s)),t=n,t&&(t.removeEventListener("close-overlay",o),t.addEventListener("close-overlay",o))});r&&r.addEventListener("click",s);t&&t.addEventListener("close-overlay",o);const i=()=>{const e=document.getElementById("top-banner"),n=document.getElementById("close-banner"),l="banner-migration-closed";e&&n&&(localStorage.getItem(l)||e.classList.remove("hidden"),n.addEventListener("click",()=>{e.classList.add("hidden"),localStorage.setItem(l,"true")}))};i();document.addEventListener("astro:after-swap",i);</script> <main id="main" class="flex-grow flex flex-col centered-px max-w-6xl py-16 lg:py-24"> <article class="flex flex-col">  <h1 class="b-h1">Explore</h1>   <section class="flex-grow flex flex-col">  <section class> <ul class="flex flex-wrap gap-4 mb-4"><li class="inline-block"><a href="/blog/explore/categories/shopify" class="button button-outline button-default button-md button-outline-default"> <svg width="1em" height="1em" viewBox="0 0 24 24" slot="before-icon" data-icon="mdi:shopify">   <use href="#ai:mdi:shopify"></use>  </svg> <span class="inline-block">   Shopify 独立站 2 </span>  </a></li></ul> <ul class="flex flex-wrap gap-2"><li class="inline-block"><a href="/blog/explore/tags/astro" class="tag tag-solid tag-md tag-solid-md"> #astro 2 </a></li><li class="inline-block"><a href="/blog/explore/tags/react" class="tag tag-solid tag-md tag-solid-md"> #react 2 </a></li></ul> </section> <div>  <h2 class="b-h2" data-astro-transition-scope="astro-lcolfsly-1"> 2025 </h2> <div> <article class="flex flex-col xs:flex-row gap-2 md:gap-4 not-first:pt-2 not-last:pb-2 md:not-first:pt-4 md:not-last:pb-4 not-last:border-b border-base-300 last:mb-6"> <img src="/_astro/PixPin_2024-11-26_18-17-35.C7Xvdjbe_2ehBux.webp" alt="Finished gallery, desktop view" data-astro-transition-scope="astro-6rimmypj-2" loading="lazy" decoding="async" fetchpriority="auto" width="215" height="120" class="object-cover rounded-box hidden xs:block w-[142px] h-[80px] md:size-auto shadow shadow-base-300"> <div class="flex flex-col"> <h4 class="b-h4 text-xl leading-none line-clamp-1 mb-1 md:mb-2" data-astro-transition-scope="astro-ssixv3gx-3"> <a class="link-default link-heading" href="/blog/add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index.mdx"> Shopify如何在产品页面显示自定义付款图标 </a> </h4> <p class="text-base text-captions line-clamp-1 md:line-clamp-2 mb-2" data-astro-transition-scope="astro-6x2d7el3-4"> 很多中国商家在建站过程中经常面临的一个问题是：无法在网站上展示商店支持的付款图标，本篇教程为你详解展示付款图标的原因，原理与方法。 </p> <span class="inline-flex items-center gap-1 text-sm text-captions text-nowrap mt-auto" data-astro-transition-scope="astro-7zkrarmn-5"> <svg width="1em" height="1em" class="w-4 h-4" data-icon="mdi:edit-outline">   <symbol id="ai:mdi:edit-outline" viewBox="0 0 24 24"><path fill="currentColor" d="m14.06 9l.94.94L5.92 19H5v-.92zm3.6-6c-.25 0-.51.1-.7.29l-1.83 1.83l3.75 3.75l1.83-1.83c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29m-3.6 3.19L3 17.25V21h3.75L17.81 9.94z"/></symbol><use href="#ai:mdi:edit-outline"></use>  </svg> <time itemprop="datePublished" datetime="2025-12-11"> 2025-12-11 </time> </span> </div> </article><article class="flex flex-col xs:flex-row gap-2 md:gap-4 not-first:pt-2 not-last:pb-2 md:not-first:pt-4 md:not-last:pb-4 not-last:border-b border-base-300 last:mb-6"> <img src="/_astro/PixPin_2024-11-26_18-33-55.s7wvdNGE_Z2wXcTX.webp" alt="Finished gallery, desktop view" data-astro-transition-scope="astro-6rimmypj-6" loading="lazy" decoding="async" fetchpriority="auto" width="215" height="120" class="object-cover rounded-box hidden xs:block w-[142px] h-[80px] md:size-auto shadow shadow-base-300"> <div class="flex flex-col"> <h4 class="b-h4 text-xl leading-none line-clamp-1 mb-1 md:mb-2" data-astro-transition-scope="astro-ssixv3gx-7"> <a class="link-default link-heading" href="/blog/prevent-credit-card-fraud-chargebacks-shopify-index.mdx"> 免受欺诈：高客单价shopify独立站应对信用卡欺诈拒付指南 </a> </h4> <p class="text-base text-captions line-clamp-1 md:line-clamp-2 mb-2" data-astro-transition-scope="astro-6x2d7el3-8"> 高客单价（例如单个 sku 通常在$200 以上的商店）独立站每年通常要面临大量欺诈损失，在国外信用卡系统中，预防欺诈也是商家在信用卡组织（visa、master 等）中应尽的义务。因此，了解如何建立完善的防欺诈体系，对保障高客单价独立站的利润至关重要。 </p> <span class="inline-flex items-center gap-1 text-sm text-captions text-nowrap mt-auto" data-astro-transition-scope="astro-7zkrarmn-9"> <svg width="1em" height="1em" viewBox="0 0 24 24" class="w-4 h-4" data-icon="mdi:edit-outline">   <use href="#ai:mdi:edit-outline"></use>  </svg> <time itemprop="datePublished" datetime="2025-11-11"> 2025-11-11 </time> </span> </div> </article> </div>  </div>  <div class="mt-auto">  </div> </section> </article> </main> <footer class="bg-slate-900 text-white py-8" data-astro-cid-sz7xmlte> <div class="max-w-6xl px-4 md:mx-auto" data-astro-cid-sz7xmlte> <div class="grid grid-cols-2 md:grid-cols-12 gap-y-12 md:gap-8 mb-8" data-astro-cid-sz7xmlte> <!-- 第一列：链接 --> <div class="flex flex-col gap-6 md:col-span-3" data-astro-cid-sz7xmlte> <a href="/standalone" class="text-3xl md:text-4xl font-bold hover:text-primary transition-colors" data-astro-cid-sz7xmlte>独立站</a> <a href="/website" class="text-3xl md:text-4xl font-bold hover:text-primary transition-colors" data-astro-cid-sz7xmlte>建站</a> <a href="/overseas" class="text-3xl md:text-4xl font-bold hover:text-primary transition-colors" data-astro-cid-sz7xmlte>出海</a> </div> <!-- 第二列：链接 + 时间 --> <div class="flex flex-col gap-6 md:col-span-3" data-astro-cid-sz7xmlte> <div class="text-3xl md:text-4xl font-bold relative w-fit" id="current-time" data-astro-cid-sz7xmlte> <span data-astro-cid-sz7xmlte>杭州</span> <span class="text-white/50 ml-2 font-mono tracking-tighter" data-astro-cid-sz7xmlte> <span id="time-hours" data-astro-cid-sz7xmlte>00</span><span class="animate-breathing-dot inline-block relative -top-0.5 mx-0.5" data-astro-cid-sz7xmlte>:</span><span id="time-minutes" data-astro-cid-sz7xmlte>00</span> </span> <span class="absolute top-2 -right-3 w-3 h-3 bg-green-500 rounded-full" data-astro-cid-sz7xmlte></span> </div> <a href="/contact" class="text-3xl md:text-4xl font-bold hover:text-primary transition-colors border-b-2 border-white/50 hover:border-primary inline-block w-fit" data-astro-cid-sz7xmlte>联系</a> <a href="/about" class="text-3xl md:text-4xl font-bold hover:text-primary transition-colors inline-block w-fit" data-astro-cid-sz7xmlte>关于</a> </div> <!-- 第三列：订阅表单 --> <div class="bg-sky-500 rounded-2xl p-8 col-span-2 md:col-span-6 relative overflow-hidden"> <div class="flex items-center gap-3 mb-6 relative z-10"> <svg width="1em" height="1em" class="w-8 h-8" data-icon="mdi:newspaper-variant-outline">   <symbol id="ai:mdi:newspaper-variant-outline" viewBox="0 0 24 24"><path fill="currentColor" d="M20 5v14H4V5zm0-2H4c-1.11 0-2 .89-2 2v14c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2m-2 12H6v2h12zm-8-8H6v6h4zm2 2h6V7h-6zm6 2h-6v2h6z"/></symbol><use href="#ai:mdi:newspaper-variant-outline"></use>  </svg> <h3 class="text-2xl font-bold">订阅电子报</h3> </div> <div class="relative z-10 flex flex-col sm:flex-row gap-2"> <a href="https://facechuhai.kit.com/548568f0af" data-formkit-toggle="548568f0af" class="flex items-center justify-center flex-1 px-6 py-3 rounded-full bg-white text-sky-500 font-bold hover:bg-white/90 transition-colors shadow-sm"> <svg width="1em" height="1em" class="w-6 h-6 mr-2" data-icon="email">   <symbol id="ai:local:email" viewBox="0 0 24 24"><path fill="currentColor" d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2zm-2 0-8 5-8-5zm0 12H4V8l8 5 8-5z"/></symbol><use href="#ai:local:email"></use>  </svg> <span>邮件订阅</span> </a> <a href="#" class="flex items-center justify-center flex-1 px-6 py-3 rounded-full bg-[#fff] text-[#2AAE67] font-bold hover:bg-white/90 transition-colors shadow-sm"> <svg width="1em" height="1em" class="w-6 h-6 mr-2" data-icon="wechat">   <symbol id="ai:local:wechat" viewBox="0 0 24 24"><path fill="#2AAE67" d="M15.85 8.14c.39 0 .77.03 1.14.08C16.31 5.25 13.19 3 9.44 3c-4.25 0-7.7 2.88-7.7 6.43 0 2.05 1.15 3.86 2.94 5.04L3.67 16.5l2.76-1.19c.59.21 1.21.38 1.87.47-.09-.39-.14-.79-.14-1.21-.01-3.54 3.44-6.43 7.69-6.43M12 5.89a.96.96 0 1 1 0 1.92.96.96 0 0 1 0-1.92M6.87 7.82a.96.96 0 1 1 0-1.92.96.96 0 0 1 0 1.92"/><path fill="#2AAE67" d="M22.26 14.57c0-2.84-2.87-5.14-6.41-5.14s-6.41 2.3-6.41 5.14 2.87 5.14 6.41 5.14c.58 0 1.14-.08 1.67-.2L20.98 21l-1.2-2.4c1.5-.94 2.48-2.38 2.48-4.03m-8.34-.32a.96.96 0 1 1 .96-.96c.01.53-.43.96-.96.96m3.85 0a.96.96 0 1 1 0-1.92.96.96 0 0 1 0 1.92"/></symbol><use href="#ai:local:wechat"></use>  </svg> <span>微信公众号</span> </a> </div> <script async data-uid="548568f0af" src="https://facechuhai.kit.com/548568f0af/index.js" data-astro-rerun></script> </div> </div> <!-- 底部小菜单 --> <div class="pt-8 border-t border-white/10" data-astro-cid-sz7xmlte> <div class="flex justify-between items-center text-sm text-white/60" data-astro-cid-sz7xmlte> <div class="flex flex-wrap gap-6" data-astro-cid-sz7xmlte> <span data-astro-cid-sz7xmlte>使用 Astro 建设</span> <a href="/privacy" class="hover:text-white transition-colors" data-astro-cid-sz7xmlte>隐私政策</a> <span data-astro-cid-sz7xmlte>2025 脸哥出海</span> </div> <a href="/api/feed.xml" class="flex items-center gap-1 hover:text-white transition-colors group" target="_blank" rel="noopener noreferrer" data-astro-cid-sz7xmlte> <svg width="1em" height="1em" class="w-4 h-4" data-astro-cid-sz7xmlte="true" data-icon="mdi:rss">   <symbol id="ai:mdi:rss" viewBox="0 0 24 24"><path fill="currentColor" d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27zm0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93z"/></symbol><use href="#ai:mdi:rss"></use>  </svg> <span class="underline decoration-white/30 group-hover:decoration-white transition-colors" data-astro-cid-sz7xmlte>RSS</span> </a> </div> </div> </div> </footer>  <script type="module">function o(){const i=new Date,t=new Date(i.toLocaleString("en-US",{timeZone:"Asia/Shanghai"})),s=t.getHours().toString().padStart(2,"0"),a=t.getMinutes().toString().padStart(2,"0"),e=document.getElementById("time-hours"),n=document.getElementById("time-minutes");e&&(e.textContent=s),n&&(n.textContent=a)}o();setInterval(o,1e3);</script> <style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).only=e;window.dispatchEvent(new Event("astro:only"));})();</script><script>(()=>{var A=Object.defineProperty;var g=(i,o,a)=>o in i?A(i,o,{enumerable:!0,configurable:!0,writable:!0,value:a}):i[o]=a;var d=(i,o,a)=>g(i,typeof o!="symbol"?o+"":o,a);{let i={0:t=>m(t),1:t=>a(t),2:t=>new RegExp(t),3:t=>new Date(t),4:t=>new Map(a(t)),5:t=>new Set(a(t)),6:t=>BigInt(t),7:t=>new URL(t),8:t=>new Uint8Array(t),9:t=>new Uint16Array(t),10:t=>new Uint32Array(t),11:t=>1/0*t},o=t=>{let[l,e]=t;return l in i?i[l](e):void 0},a=t=>t.map(o),m=t=>typeof t!="object"||t===null?t:Object.fromEntries(Object.entries(t).map(([l,e])=>[l,o(e)]));class y extends HTMLElement{constructor(){super(...arguments);d(this,"Component");d(this,"hydrator");d(this,"hydrate",async()=>{var b;if(!this.hydrator||!this.isConnected)return;let e=(b=this.parentElement)==null?void 0:b.closest("astro-island[ssr]");if(e){e.addEventListener("astro:hydrate",this.hydrate,{once:!0});return}let c=this.querySelectorAll("astro-slot"),n={},h=this.querySelectorAll("template[data-astro-template]");for(let r of h){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(n[r.getAttribute("data-astro-template")||"default"]=r.innerHTML,r.remove())}for(let r of c){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(n[r.getAttribute("name")||"default"]=r.innerHTML)}let p;try{p=this.hasAttribute("props")?m(JSON.parse(this.getAttribute("props"))):{}}catch(r){let s=this.getAttribute("component-url")||"<unknown>",v=this.getAttribute("component-export");throw v&&(s+=` (export ${v})`),console.error(`[hydrate] Error parsing props for component ${s}`,this.getAttribute("props"),r),r}let u;await this.hydrator(this)(this.Component,p,n,{client:this.getAttribute("client")}),this.removeAttribute("ssr"),this.dispatchEvent(new CustomEvent("astro:hydrate"))});d(this,"unmount",()=>{this.isConnected||this.dispatchEvent(new CustomEvent("astro:unmount"))})}disconnectedCallback(){document.removeEventListener("astro:after-swap",this.unmount),document.addEventListener("astro:after-swap",this.unmount,{once:!0})}connectedCallback(){if(!this.hasAttribute("await-children")||document.readyState==="interactive"||document.readyState==="complete")this.childrenConnectedCallback();else{let e=()=>{document.removeEventListener("DOMContentLoaded",e),c.disconnect(),this.childrenConnectedCallback()},c=new MutationObserver(()=>{var n;((n=this.lastChild)==null?void 0:n.nodeType)===Node.COMMENT_NODE&&this.lastChild.nodeValue==="astro:end"&&(this.lastChild.remove(),e())});c.observe(this,{childList:!0}),document.addEventListener("DOMContentLoaded",e)}}async childrenConnectedCallback(){let e=this.getAttribute("before-hydration-url");e&&await import(e),this.start()}async start(){let e=JSON.parse(this.getAttribute("opts")),c=this.getAttribute("client");if(Astro[c]===void 0){window.addEventListener(`astro:${c}`,()=>this.start(),{once:!0});return}try{await Astro[c](async()=>{let n=this.getAttribute("renderer-url"),[h,{default:p}]=await Promise.all([import(this.getAttribute("component-url")),n?import(n):()=>()=>{}]),u=this.getAttribute("component-export")||"default";if(!u.includes("."))this.Component=h[u];else{this.Component=h;for(let f of u.split("."))this.Component=this.Component[f]}return this.hydrator=p,this.hydrate},e,this)}catch(n){console.error(`[astro-island] Error hydrating ${this.getAttribute("component-url")}`,n)}}attributeChangedCallback(){this.hydrate()}}d(y,"observedAttributes",["props"]),customElements.get("astro-island")||customElements.define("astro-island",y)}})();</script><astro-island uid="Z5NTfB" component-url="/_astro/ScrollToTop.Djx9VDEJ.js" component-export="default" renderer-url="/_astro/client.1_nK_-jT.js" props="{}" ssr client="only" opts="{&quot;name&quot;:&quot;ScrollToTop&quot;,&quot;value&quot;:&quot;react&quot;}" await-children><template data-astro-template> <svg width="1em" height="1em" class="h-10 w-10 text-content hover:text-links-hover" data-icon="mdi:arrow-up-thin">   <symbol id="ai:mdi:arrow-up-thin" viewBox="0 0 24 24"><path fill="currentColor" d="M7.03 9.97h4v8.92l2.01.03V9.97h3.99l-5-5Z"/></symbol><use href="#ai:mdi:arrow-up-thin"></use>  </svg> </template><!--astro:end--></astro-island>  </body></html>

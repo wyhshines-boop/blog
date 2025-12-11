@@ -1,7 +1,7 @@
 ---
 layout: '../layouts/Page.astro'
-title: 'About'
-description: 'About me page'
+title: '关于本站'
+description: '跨境电商独立站运营深度指南： 本站由资深 Shopify 运营专家创建，专注于提供 Shopify 独立站搭建、系统深度解析 和 实战运营技巧。内容覆盖 Stripe 收款、海外公司注册、科学上网、AI 编程及独立开发等海外互联网前沿知识。'
 ---
 
 import { Image } from 'astro:assets';
@@ -9,7 +9,7 @@ import { Image } from 'astro:assets';
 import { CONFIG_CLIENT } from '../config/client';
 import { IMAGE_SIZES, TW_SCREENS } from '../constants/image';
 import LinkWithLabel from '../components/LinkWithLabel.astro';
-import Electronics1Image from '../assets/images/all-images/electronics1.jpg';
+import AboutImage from '../assets/images/all-images/2111765436740_.pic.jpg';
 
 
 export const { AUTHOR_EMAIL, AUTHOR_GITHUB, AUTHOR_LINKEDIN, AUTHOR_TWITTER, AUTHOR_YOUTUBE } = CONFIG_CLIENT;
@@ -22,20 +22,24 @@ export const imageSizes = {
   sizes: `(max-width: ${TW_SCREENS.XS}px) ${TW_SCREENS.XS}px, (max-width: ${TW_SCREENS.SM}px) ${TW_SCREENS.SM}px, (max-width: ${TW_SCREENS.MD}px) ${TW_SCREENS.MD}px, ${TW_SCREENS.XS}px`,
 };
 
-# About
+# 关于作者
 
-<Image {...imageSizes} src={Electronics1Image} alt="Veronica transmitter board" class="md:max-w-sm lg:max-w-md md:float-right md:mt-2 md:ml-8" /> 
+<Image {...imageSizes} src={AboutImage} alt="脸哥出海-关于作者" class="md:max-w-sm lg:max-w-md md:float-right md:mt-2 md:ml-8" /> 
 
-My name is Nemanja, I am a full-stack developer with experience in React.js, Next.js, and Node.js. In the past, I have worked with C# and ASP.NET, and lately, I have developed an interest in Python and FastAPI. I also like to experiment with DevOps and homelab self-hosting.
+脸哥是我的绰号，我是一名跨境电商运营，专注于 Shopify 独立站。由于对网站较感兴趣，我大学时开始玩 WordPress，自学过计算机组成原理，计算机网络等基础课程。从电商专业毕业后一直在做独立站运营，对 Shopify 这套电商系统较为熟悉，有较为深入的钻研，因此开设这个博客供有志向的伙伴们进行参考。
 
-My hobbies are fishing, lure building, bicycling, playing guitar, composing in FL Studio, and DIY electronics.
+由于我对海外互联网也感兴趣，因此也会写一些科学上网、Stripe收款、海外公司、AI 编程、独立开发、建站等相关的文章。
 
-If you want to contact me about coding, or if you need a companion for fishing or jamming, use the links below.
+欢迎与我联系：
 
-<LinkWithLabel label="Email" href={authorEmailHref} title="Author's email" variant="link" >{AUTHOR_EMAIL}</LinkWithLabel>
-<LinkWithLabel label="GitHub" href={AUTHOR_GITHUB} title="Author GitHub profile" variant="link" />
-<LinkWithLabel label="LinkedIn" href={AUTHOR_LINKEDIN} title="Author LinkedIn profile" variant="link" />
-<LinkWithLabel label="Twitter" href={AUTHOR_TWITTER} title="Author Twitter profile" variant="link" />
-<LinkWithLabel label="YouTube" href={AUTHOR_YOUTUBE} title="Author YouTube profile" variant="link" />
+X (Twitter)：[yahao](https://x.com/ovoshines " X 账号")
+
+微信：wyhshines
+
+邮箱：[wyhshines@gmail.com](mailto:wyhshines@gmail.com "站长邮箱")
+
+本站使用 Astro 搭建，部署在 Vercel 上。
+
+
 
 

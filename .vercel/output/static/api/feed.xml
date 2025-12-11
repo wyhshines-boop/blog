@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>脸哥-Shopify独立站和出海教程</title>
+        <link>http://localhost:3000</link>
+        <description>Shopify 独立站运营与出海教程。提供从建站基础、选品策略、流量获取到数据分析的全流程学习路径</description>
+        <lastBuildDate>Thu, 11 Dec 2025 11:54:59 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <language>en</language>
+        <image>
+            <title>脸哥-Shopify独立站和出海教程</title>
+            <url>http://localhost:3000/images/favicons/favicon-32x32.png</url>
+            <link>http://localhost:3000</link>
+        </image>
+        <copyright>&amp;copy;2025 脸哥出海. All rights reserved.</copyright>
+        <atom:link href="http://localhost:3000/api/feed.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[Shopify如何在产品页面显示自定义付款图标]]></title>
+            <link>http://localhost:3000/blog/add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index.mdx/</link>
+            <guid isPermaLink="false">http://localhost:3000/blog/add-payment-icons-below-the-purchase-button-on-a-shopify-product-page-index.mdx/</guid>
+            <pubDate>Fri, 01 Nov 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[很多中国商家在建站过程中经常面临的一个问题是：无法在网站上展示商店支持的付款图标，本篇教程为你详解展示付款图标的原因，原理与方法。]]></description>
+            <content:encoded><![CDATA[<p>import Alert from ’@/components/Alert.astro’</p>
+<h3 id="为什么无法在产品页和网站页尾展示付款图标">为什么无法在产品页和网站页尾展示付款图标？</h3>
+<p><alert variant="tip" title="注意">Shopify 现已支持所有商店显示付款图标，现在所有模板都会根据商家使用的收款提供商显示支持的付款图标。但如果你想指定显示哪些付款图标，仍可以参考本文章，因为Shopify 会显示所有付款图标，这会导致网站排版看起来更乱。</alert></p>
+<p>通常情况下，shopify模板都具有展示付款图标的选项功能，你只需要在产品模板中开启显示即可，但是只有开通Shopify payments的商家才能正常使用这个功能。</p>
+<p><img src="./_images/image-6.png" alt=""></p>
+<p>在Shopify商店中展示付款图标的3种方式:</p>
+<h2 id="1最简单的方式使用liquid代码">1.最简单的方式：使用Liquid代码</h2>
+<p>复制以下代码，在产品模板页面中点击”添加 Block块”，找到并添加一个 “custom liquid（自定义Liquid）” 区块，把代码复制进去即可</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="html"><code><span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">style</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#B392F0">  .methods-of-payment</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">    display</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">flex</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    justify-content</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">center</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    align-items</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">center</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    flex-wrap</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">wrap</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    margin-top</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">10</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">  .methods-of-payment</span><span style="color:#85E89D"> img</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">    height</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">25</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">/* 图标高度 */</span></span>
+<span class="line"><span style="color:#79B8FF">    margin</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#79B8FF"> 5</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">/* 图标之间的间距 */</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">  .lt-ie9</span><span style="color:#B392F0"> .methods-of-payment</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#B392F0">  .ie8</span><span style="color:#B392F0"> .methods-of-payment</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#B392F0">  .oldie</span><span style="color:#B392F0"> .methods-of-payment</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">    display</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">none</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;/</span><span style="color:#85E89D">style</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">{% comment %}</span></span>
+<span class="line"><span style="color:#E1E4E8">  在下方assign payment_types中填写你想要自定义的付款方式名称即可。本提示不会在网站上显示。</span></span>
+<span class="line"><span style="color:#E1E4E8">{% endcomment %}</span></span>
+<span class="line"><span style="color:#E1E4E8">{% assign payment_types = 'paypal,apple_pay,google_pay,visa,master,discover' | split: ',' %}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">span</span><span style="color:#B392F0"> class</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"methods-of-payment"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">  {% for type in payment_types %}</span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">img</span></span>
+<span class="line"><span style="color:#B392F0">      src</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"{{ type | payment_type_img_url }}"</span></span>
+<span class="line"><span style="color:#B392F0">      height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"25"</span></span>
+<span class="line"><span style="color:#B392F0">      alt</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"{{ type | capitalize | replace: '_', ' ' }}"</span></span>
+<span class="line"><span style="color:#B392F0">      loading</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"lazy"</span></span>
+<span class="line"><span style="color:#E1E4E8">    /></span></span>
+<span class="line"><span style="color:#E1E4E8">  {% endfor %}</span></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;/</span><span style="color:#85E89D">span</span><span style="color:#E1E4E8">></span></span></code></pre>
+<p><strong>效果预览：</strong></p>
+<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image.png" alt=""></p>
+<p>你可以在 <code>assign payment_types=" " </code>中填写想要显示的付款方式，shopify支持以下付款方式图标：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>afterpay - american_express - apple_pay - bitcoin - dankort - diners_club - discover - dogecoin - dwolla - facebook_pay -forbrugsforeningen - google_pay - ideal - jcb - klarna - klarna-pay-later - litecoin - maestro - master - paypal - shopify_pay - sofort - unionpay - visa</span></span></code></pre>
+<p>通过在产品页面显示你的网站支持的付款方式，有助于提升客户信任。</p>
+<p><strong>提升转化率的技巧</strong>：如果你的商店支持分期付款，先买后付等付款方式，可以把 Klarna，shopify_pay 等显示在靠前的位置，这对于高客单价产品较为有效。</p>
+<h2 id="2修改主题模板代码">2.修改主题模板代码</h2>
+<p>此种方式需要您具有前端和Liquid基础技术。</p>
+<p>shopify主题模板一般支持在两个地方显示付款图标：<strong>产品页面和页尾</strong></p>
+<p>我们可以通过添加Liquid代码来实现这个功能，对于不同主题由于其功能结构的不同修改的文件也不同，通常修改 <em>main-product.iquid</em> 和 <em>footer.liquid</em> 即可实现</p>
+<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image-3.png" alt=""></p>
+<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image-2.png" alt=""></p>
+<h2 id="3使用shopify-app-store中的付费插件">3.使用shopify app store中的付费插件</h2>
+<p>在app商店中有许多信任徽章应用，搜索相关关键词例如 “payment icon” 就可以找到，一些插件也提供免费套餐</p>
+<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image-4.png" alt=""></p>
+<h2 id="一种更好的方法在购物车中显示付款和物流图标">一种更好的方法：在购物车中显示付款和物流图标</h2>
+<p>多数付费shopify主题都支持动态弹出式购物车，我们可以在购物车底部添加，这样用户在加购后就能看到它们。如果需要开发此功能，一般需要修改 <em>cart-drawer.liquid</em> 文件.</p>
+<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image-7.png" alt=""></p>]]></content:encoded>
+            <author>wyhshines@gmail.com (脸哥出海)</author>
+        </item>
+        <item>
+            <title><![CDATA[免受欺诈：高客单价shopify独立站应对信用卡欺诈拒付指南]]></title>
+            <link>http://localhost:3000/blog/prevent-credit-card-fraud-chargebacks-shopify-index.mdx/</link>
+            <guid isPermaLink="false">http://localhost:3000/blog/prevent-credit-card-fraud-chargebacks-shopify-index.mdx/</guid>
+            <pubDate>Sat, 30 Nov 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[高客单价（例如单个 sku 通常在$200 以上的商店）独立站每年通常要面临大量欺诈损失，在国外信用卡系统中，预防欺诈也是商家在信用卡组织（visa、master 等）中应尽的义务。因此，了解如何建立完善的防欺诈体系，对保障高客单价独立站的利润至关重要。]]></description>
+            <content:encoded><![CDATA[<h2 id="什么是信用卡拒付与拒绝">💳什么是信用卡拒付与拒绝？</h2>
+<p>很多人刚开始往往分不清<strong>拒付</strong>（charge back）与<strong>拒绝</strong>（decline）。</p>
+<p><strong>拒付</strong>（charge back）是指客户认为在这笔交易中他遭遇了欺诈，他的信用卡被人盗用或商家没有交付产品以及可能交付了质量不合规的产品，因此客户向银行发起拒付，请求银行将钱款追回。拒付主要有以下类型：</p>
+<ul>
+<li>
+<p><strong>欺诈：客户认为在这笔交易中他遭遇了欺诈</strong>，<strong>他的卡被盗刷</strong>。<strong>这是商家最经常面临的拒付类型，本篇文章的主旨就是如何避免欺诈性拒付，本文提到的拒付特指欺诈拒付</strong></p>
+</li>
+<li>
+<p>未收到产品</p>
+</li>
+<li>
+<p>产品不可接受</p>
+</li>
+<li>
+<p>信用额度未处理</p>
+</li>
+<li>
+<p>…</p>
+</li>
+</ul>
+<p><strong>拒绝</strong>（decline）是指客户在购物过程中因余额不足，交易面临风险等因素导致无法完成付款，银行最终拒绝了购物交易，这不会对商家造成任何风险。</p>
+<p>信用卡拒付会导致商家钱货两空，还会被要求支付争议处理费甚至面临卡组织的罚款，可谓损了夫人又折兵，只能忍气吞声咽下损失，因为信用卡组织往往无条件偏向客户，即使客户使用了<strong>友好型欺诈方式</strong>（意思是卡是客户的，商家也履行了交付义务，而客户却撒谎称遭遇了欺诈的薅羊毛行为）</p>
+<p>需要注意的是，如果商家交付的产品和服务确实存在问题，应积极面对客户的合理诉求，如果商家在短时间内遭遇了多笔拒付，可能遭到银行和卡组织的审查与罚款。</p>
+<h2 id="️了解-shopify-欺诈分析系统">🛡️了解 shopify 欺诈分析系统</h2>
+<p>Shopify 与 stripe 合作的欺诈分析系统可以最大程度帮助商家避免被客户欺诈，信用卡拒付欺诈往往是有组织有预谋的，商家不应贪图销售额而在面临高风险的情况下为欺诈订单发货。</p>
+<p>你可以在每一笔订单右下方看到欺诈分析指标，欺诈风险分析有三个指标：</p>
+<p>高风险：欺诈订单，请取消该订单</p>
+<p>中风险：通常情况下不是欺诈订单，不会出现拒付</p>
+<p>低风险：正常订单</p>
+<p>点击小眼睛图标可以看到详细的分析指标。</p>
+<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image-8.png" alt=""></p>
+<p>欺诈分析系统会对每一笔订单生成风险指标，即使这个订单是使用 paypal 等非信用卡付款方式支付的。</p>
+<p><strong>欺诈分析系统并不是完全免费的</strong>，只有商家满足以下条件之一，才会看到订单欺诈分析指标：</p>
+<ul>
+<li>
+<p>商家开通了 shopifyPayments 收单方式，将自动获取欺诈分析</p>
+</li>
+<li>
+<p>商家使用 shopify basic 以上的套餐，将免费获取欺诈分析</p>
+</li>
+</ul>
+<p>使用最便宜的 Basic套餐则无法在shopify后台看到欺诈分析，但是你的收单服务商后台会提供免费的欺诈分析功能，具体可以咨询收单方。</p>
+<h2 id="️避免欺诈的最佳做法自动拒绝为高风险订单发货">⚠️避免欺诈的最佳做法：自动拒绝为高风险订单发货</h2>
+<p>如果某笔订单被标记为高风险，即使客户证明他是卡持有人或提交了证明交易合法的其他资料，也要拒绝为这笔订单发货，99% 的高风险订单最终都会出现信用卡拒付。出现高风险订单后，需要立即取消该订单并退款。商家应该信任欺诈分析系统，这是基于多年的海量交易数据和机器学习做出的预警。</p>
+<p>如果订单被标记为中风险，通常情况下可以为订单发货，这类订单很少出现拒付，如果交易额较大，商家也可以与客户先沟通再发货。</p>
+<p>如果订单为低风险，则没有遭遇欺诈性拒付的风险</p>
+<h3 id="使用-shopify-flow-自动化取消高风险订单">使用 shopify flow 自动化取消高风险订单</h3>
+<p>每次手动取消高风险订单都很麻烦，你可以打开后台的 flow 应用，点击<strong>浏览模版</strong>，找到“Cancel high-risk orders”，安装并启用，如果商店出现高风险订单，flow 会在高风险订单被创建后立即自动取消该订单，并向你发送一封邮件通知此次交易的信息。</p>
+<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image-9.png" alt=""></p>
+<h2 id="减少损失调整款项获取方式">减少损失：调整款项获取方式</h2>
+<p>对于高客单价的商店来说，每笔订单可能高达数千美元，当一笔订单发生取消或退款时，银行并不会退还交易时收取的手续费，以常规4%的卡费率举例，当一笔订单1000美元的高风险订单被取消并退款后，你仍然会被收取40美元的手续费。</p>
+<p><strong>为减少损失，商家可以调整款项获取方式</strong>，如果商家在取消订单前没有获取款项，则这笔交易额处于pending状态，并未打入商家收款帐户。当一笔订单被创建后，商家可以选择多种款项获取方式来收取订单交易额到收款账户中：</p>
+<ul>
+<li>
+<p>立即获取款项：客户下单后就立即自动获取款项，这意味着取消订单也会被收取手续费</p>
+</li>
+<li>
+<p>发货时自动获取：为某个订单完整发货后（只有在订单中点击<strong>为商品发货</strong>后才算发货）自动获取</p>
+</li>
+<li>
+<p>手动获取：在每笔订单中点击“获取款项”时才会获取</p>
+</li>
+</ul>
+<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image-10.png" alt=""></p>
+<p><strong>建议：<strong>如果你的商店订单取消率高，高风险订单多，建议使用</strong>发货时自动获取</strong>的方式。</p>
+<p>这样在取消订单或高风险订单时就不会被收取手续费，因为此时订单款项正处于pending状态，还未打入你的收款账户中。</p>
+<p><strong>需要注意</strong>：如果你的商店发货周期较长，总是很久才能发货，要及时手动获取款项（使用发货时自动获取方式时也可以提前手动获取），因为在订单被创建后一周左右商家如果没有获得款项，钱款将会原路退回客户手中。</p>
+<h2 id="遭遇拒付后应该怎么做">遭遇拒付后应该怎么做</h2>
+<p>如果某笔订单出现拒付，<strong>钱款会被立即追回</strong>，你的收单方（shopifyPayments,airwallex，万里汇，payoneer等）会通知你处理拒付，通常你需要在一个月内提交证据进行申诉，每次拒付银行都会收取一笔拒付处理费（十几美元左右），如果是高风险订单出现欺诈性拒付，就不要抱有追回钱款和货物的希望了，通常银行都会判定客户胜利，<strong>请记住预防欺诈是商家在信用卡网络中的一份责任，不为高风险订单发货既可以保护你自己也可以保护真正的卡主人</strong>。</p>
+<p>如果是因客户对商品和服务不满意导致的拒付，则可以尝试和客户沟通，补偿客户能否去银行撤销拒付，当然你也可以提交证据等待银行裁定。</p>
+<p>拒付争议的胜利一方将会获取交易款项，如果商家胜利，则可能还将获得拒付处理费。</p>
+<p>对于任何一笔订单，客户通常可以在120天到半年的时间内发起拒付。</p>
+<h2 id="独立站拒付订单过多怎么办">独立站拒付订单过多怎么办</h2>
+<p>对于处于信用卡交易网络中的商家来说，需要尽最大力度减少订单拒付，如果商店在某一时间段内的拒付订单较多，会面临多重风险：</p>
+<ul>
+<li>收单服务提供商如 Shopify payment、Stripe、Airwallex 等可能会关停你的账户，无法收款。</li>
+<li>paypal 会提高你的争议处理费</li>
+<li>Shopify 将关停你的 shop 店铺</li>
+</ul>
+<p>因此商家提供的商品和服务要保证基本质量，在处理和客户的纠纷中坦诚相对，如果商家问题较大，尽量多补偿客户，让客户取消争议。</p>
+<h2 id="3ds验证与责任转移">3DS验证与责任转移</h2>
+<p>最后说说3DS验证与责任转移，3D Secure验证是保障交易合法的一种身份验证技术，当客户下单付款时，交易系统可能会启动3DS验证来确认这次交易是否有风险，这会要求客户使用以下方式来验证身份：</p>
+<ul>
+<li>
+<p>Pin码</p>
+</li>
+<li>
+<p>验证码或密码 （查询码）</p>
+</li>
+<li>
+<p>指纹或其他生物识别方式</p>
+</li>
+</ul>
+<p>3DS验证是由收单方自动设置的，例如shopifyPayments 或空中云汇，Stripe等，3DS验证过的交易更加安全，但如果验证频率过高也会导致客户弃单，转化率下降。一些收单方允许客户指定如何设置3DS验证。</p>
+<p><strong>责任转移</strong> ：如果一笔订单触发并通过了3DS认证，则会在shopify风险分析指标中显示。通过3DS验证的订单责任将被转移到发卡方，简而言之：如果这笔订单以后出现拒付争议，则商家不应为此负责，因为商家是收款方银行的客户，不是发卡银行的客户。此时你的收单服务商将负责为你处理这笔拒付交易，而不是由客户的银行裁判。</p>
+<p><strong>Shop Protect</strong> ：如果你使用 shopifyPayments，则在部分地区如美国支持 Shop Protect，通过Shop Protect 验证的订单即使遭遇欺诈，损失会由 Shopify 赔付。</p>
+<p><img src="https://shopify526.com/wp-content/uploads/2024/11/image-11.png" alt=""></p>]]></content:encoded>
+            <author>wyhshines@gmail.com (脸哥出海)</author>
+        </item>
+    </channel>
+</rss>

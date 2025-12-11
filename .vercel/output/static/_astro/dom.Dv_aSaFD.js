@@ -1,0 +1,1 @@
+const E={GISCUS_WIDGET_SELECTOR:"#giscus-comments",GISCUS_IFRAME_SELECTOR:'iframe[title="Comments"]',GITHUB_MARKDOWN_BODY_SELECTOR:"#markdown-body-id",SCROLL_TO_TOP_SELECTOR:"#main-header"};export{E as S};

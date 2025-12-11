@@ -9,24 +9,46 @@ const props = Astro.props;
 ---
 
 <FullWidth {...props}>
-  <article class="pb-16">
-    <figure class="centered max-w-4xl">
-      <slot name="hero-image" />
-    </figure>
+  <article class="pb-16 max-w-6xl mx-auto px-4 w-full mt-12">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <!-- 左侧主要内容区 -->
+      <div class="lg:col-span-8 min-w-0">
+        <!-- Hero Image 区域 (现在放在 Grid 内部，与内容对齐) -->
+        <div class="mb-8">
+           <slot name="hero-image" />
+        </div>
+        <!-- 标题和 Meta -->
+        <header class="mb-8">
+          <slot name="hero-text" />
+        </header>
 
-    <section class="centered-px max-w-3xl b-h2-my">
-      <slot name="hero-text" />
-    </section>
+        <!-- 移动端目录插槽 (在 lg 屏幕下隐藏) -->
+        <div class="lg:hidden mb-8">
+          <slot name="toc-mobile" />
+        </div>
 
-    <section class="my-prose centered-px max-w-3xl b-h2-my">
-      <slot name="content" />
-    </section>
+        <!-- 正文 -->
+        <section class="my-prose max-w-none">
+          <slot name="content" />
+        </section>
 
-    <section class="centered-px max-w-3xl">
-      <slot name="after-content" />
-    </section>
+        <!-- 正文后内容 (Tags, Share, Comments) -->
+        <footer class="mt-12">
+          <slot name="after-content" />
+        </footer>
+      </div>
 
-    <section class="centered-px max-w-5xl b-h2-mt">
+      <!-- 右侧侧边栏区 (仅在 lg 屏幕下显示) -->
+      <aside class="hidden lg:block lg:col-span-4 relative">
+        <div class="sticky top-8">
+          <slot name="sidebar" />
+        </div>
+      </aside>
+    </div>
+
+    <!-- 更多文章 -->
+    <section class="mt-16 border-t border-base-300 pt-12">
       <slot name="more-posts" />
     </section>
   </article>
