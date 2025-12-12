@@ -1,0 +1,17 @@
+---
+layout: '../layouts/Page.astro'
+title: '页面未找到'
+description: '该页面不存在'
+
+# id for og image
+pageId: 'page404' 
+---
+
+import Button from '../components/Button.astro';
+
+<section class="flex flex-col items-center justify-start text-center">
+  <h1 class="text-xl md:text-2xl font-bold text-primary mb-4">404 页面未找到</h1>
+  <h2 class="font-bold mt-0">该页面不存在</h2>
+  <p class="text-captions mt-0 mb-4">抱歉，我们找不到该页面。您可以返回首页探索更多内容。</p>
+  <Button href="/" variant="outline" colors="primary" size="md" class="not-prose">返回首页</Button>
+</section>
